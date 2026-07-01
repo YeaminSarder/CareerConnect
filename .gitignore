@@ -1,0 +1,7 @@
+# emacs save files
+*~*
+*#*
+
+node_modules
+.env
+db
