@@ -9,7 +9,7 @@ app.use((err, req, res, next) => {
 	if (err instanceof SyntaxError && "body" in err) {
 		console.error(err)
         return res.status(400).json({
-            message: "Invalid JSON"
+            error: "Invalid JSON"
         });
     }
 	next()
@@ -17,7 +17,7 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {		
     console.error(err);
     res.status(500).json({
-        message: "Internal Server Error"
+        error: "Internal Server Error"
     });
 });
 mongoose.connect(process.env.MONGO_URI)

@@ -8,7 +8,7 @@ const getProfiles = async (req, res) => {
 
         res.status(200).json(profiles);
     } catch (err) {
-        res.status(500).json({ msg: err.message });
+        res.status(500).json({ error: err.message });
     }
 };
 
@@ -17,20 +17,20 @@ const getProfile = async (req, res) => {
 	try {
         const { id } = req.params;
 		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(404).json({"msg":"No such profile"})
+			return res.status(404).json({"error":"No such profile"})
 		}
 
         const profile = await Profile.findById(id);
 
         if (!profile) {
             return res.status(404).json({
-                msg: "Profile not found",
+                error: "Profile not found",
             });
         }
 
         res.status(200).json(profile);
     } catch (err) {
-        res.status(400).json({ msg: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 
@@ -43,10 +43,14 @@ const createProfile = async (req, res) => {
             name,
             age,
         });
-
+        if (!profile) {
+            return res.status(400).json({
+                error: "Profile not created",
+            });
+        }
         res.status(201).json(profile);
     } catch (err) {
-        res.status(400).json({ msg: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 
@@ -55,7 +59,7 @@ const updateProfile = async (req, res) => {
     try {
         const { id } = req.params;
 		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(404).json({"msg":"No such profile"})
+			return res.status(404).json({"error":"No such profile"})
 		}
         const profile = await Profile.findByIdAndUpdate(
             id,
@@ -68,13 +72,13 @@ const updateProfile = async (req, res) => {
 
         if (!profile) {
             return res.status(404).json({
-                msg: "Profile not found",
+                error: "Profile not found",
             });
         }
 
         res.status(200).json(profile);
     } catch (err) {
-        res.status(400).json({ msg: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 
@@ -83,21 +87,19 @@ const deleteProfile = async (req, res) => {
     try {
         const { id } = req.params;
 		if (!mongoose.Types.ObjectId.isValid(id)) {
-			return res.status(404).json({"msg":"No such profile"})
+			return res.status(404).json({"error":"No such profile"})
 		}
         const profile = await Profile.findByIdAndDelete(id);
 
         if (!profile) {
             return res.status(404).json({
-                msg: "Profile not found",
+                error: "Profile not found",
             });
         }
 
-        res.status(200).json({
-            msg: "Profile deleted successfully",
-        });
+        res.status(200).json(profile);
     } catch (err) {
-        res.status(400).json({ msg: err.message });
+        res.status(400).json({ error: err.message });
     }
 };
 

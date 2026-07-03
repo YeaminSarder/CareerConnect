@@ -1,25 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import useProfileContext from '../hooks/profile'
+import ProfileDetails from '../components/profile_details'
+import ProfileForm from '../components/profile_form'
+import Stack from 'react-bootstrap/Stack'
 const Home = () => {
-    const [profile, setProfile] = useState(null)
-
+    const { state, dispatch } = useProfileContext()
     useEffect(() => {
         const fetchProfile = async () => {
             const response = await fetch('/api/profile')
             const json = await response.json()
             if (response.ok) {
-                setProfile(json)
+                dispatch({ type: 'SET_PROFILE', payload: json })
             }
         }
         fetchProfile()
     }, [])
     return (
         <div className="home">
-            {profile && profile.map((profile) => (
-                <div key={profile._id}>
-                    <h2>{profile.name}</h2>
-                    <p>{profile.age}</p>
-                </div>
+            <Stack direction="horizontal" gap={3} className="mb-3 align-items-start">
+            <div>
+            {state.profile && state.profile.map((profile) => (
+                <ProfileDetails key={profile._id} profile={profile} />
             ))}
+            </div>
+            <div className="m-2">
+            <ProfileForm className="ms-auto" style={{ maxWidth: '400px' }} />
+            </div>
+            </Stack>
         </div>
     )
 }
