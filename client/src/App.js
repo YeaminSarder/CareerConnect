@@ -9,7 +9,7 @@ function App() {
     <div className="App">
 	  <BrowserRouter>
         <Navbar/>
-		<Routes>
+		    <Routes>
           <Route
             path='/'
             element={<Home/>}
