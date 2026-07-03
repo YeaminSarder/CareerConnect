@@ -14,7 +14,12 @@ const Home = () => {
     }, [])
     return (
         <div className="home">
-            <p>Welcome to CareerConnect!</p>
+            {profile && profile.map((profile) => (
+                <div key={profile._id}>
+                    <h2>{profile.name}</h2>
+                    <p>{profile.age}</p>
+                </div>
+            ))}
         </div>
     )
 }
