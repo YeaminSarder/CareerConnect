@@ -5,8 +5,10 @@ import Navbar from './components/navbar'
 import Profile from './pages/profile'
 import Register from './pages/register'
 import Login from './pages/login'
-
+import { useAuthContext } from './hooks/use-auth-context'
+import { Navigate } from 'react-router-dom'
 function App() {
+  const { user } = useAuthContext()
   return (
     <div className="App">
 	  <BrowserRouter>
@@ -14,19 +16,19 @@ function App() {
 		    <Routes>
           <Route
             path='/'
-            element={<Home/>}
+            element={user ? <Home /> : <Navigate to="/login" /> }
           />
           <Route
             path='/profile'
-            element={<Profile/>}
+            element={user ? <Profile /> : <Navigate to="/login" /> }
           />
           <Route
             path='/register'
-            element={<Register/>}
+            element={!user ? <Register /> : <Navigate to="/profile" /> }
           />
           <Route
             path='/login'
-            element={<Login/>}
+            element={!user ? <Login /> : <Navigate to="/profile" /> }
           />
         </Routes>
 	  </BrowserRouter>
