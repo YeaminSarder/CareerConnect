@@ -2,18 +2,28 @@ import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import useProfileContext from '../hooks/profile';
+import { useAuthContext } from '../hooks/use-auth-context';
+
 const ProfileForm = () => {
   const { dispatch } = useProfileContext();
+  const { user } = useAuthContext();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      setError('You must be logged in to add a profile');
+      return;
+    }
     const updatedProfile = { name, age };
     const response = await fetch(`/api/profile/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`
+      },
       body: JSON.stringify(updatedProfile),
     });
     if (!response.ok) {

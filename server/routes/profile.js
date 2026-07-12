@@ -2,6 +2,9 @@ const express = require('express')
 const router = express.Router()
 const Profile = require('../models/profile')
 const controller = require('../controllers')
+const requireAuth = require('../middleware/require-auth')
+
+router.use(requireAuth)
 
 router.get('/', controller.profile.getProfiles)
 router.get('/:id', controller.profile.getProfile)

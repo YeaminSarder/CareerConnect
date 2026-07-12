@@ -1,11 +1,20 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import useProfileContext from '../hooks/profile'
+import { useAuthContext } from '../hooks/use-auth-context'
 const ProfileDetails = ({profile}) => {
     const { dispatch } = useProfileContext()
+    const { user } = useAuthContext()
     const handleClick = async () => {
+      if (!user) {
+        console.error('You must be logged in to delete a profile');
+        return;
+      }
         const response = await fetch(`/api/profile/${profile._id}`, {
             method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
         });
         const json = await response.json();
         if (response.ok) {
