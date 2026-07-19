@@ -6,7 +6,7 @@ const Home = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const response = await fetch('/api/profile', {
+            const response = await fetch(`${process.env.REACT_APP_URI}/api/profile`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }

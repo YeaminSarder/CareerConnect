@@ -10,7 +10,7 @@ const ProfileDetails = ({profile}) => {
         console.error('You must be logged in to delete a profile');
         return;
       }
-        const response = await fetch(`/api/profile/${profile._id}`, {
+        const response = await fetch(`${process.env.REACT_APP_URI}/api/profile/${profile._id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${user.token}`

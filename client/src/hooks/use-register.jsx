@@ -10,7 +10,7 @@ export const useRegister = () => {
     setIsLoading(true)
     setError(null)
 
-    const response = await fetch('/api/user/register', {
+    const response = await fetch(`${process.env.REACT_APP_URI}/api/user/register`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({email, password})

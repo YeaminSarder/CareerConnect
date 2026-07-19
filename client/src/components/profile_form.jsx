@@ -18,7 +18,7 @@ const ProfileForm = () => {
       return;
     }
     const updatedProfile = { name, age };
-    const response = await fetch(`/api/profile/`, {
+      const response = await fetch(`${process.env.REACT_APP_URI}/api/profile/`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
