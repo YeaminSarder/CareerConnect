@@ -4,14 +4,10 @@ const Schema = mongoose.Schema
 
 const profileSchema = new Schema(
 	{
-		name: {
+		description: {
 			type: String,
-			required: true
+			required: false
 		},
-		age: {
-			type: Number,
-			required: true
-		}
 	},
 	{ timestamps: true}
 )

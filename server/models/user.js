@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt')
 
 const validator = require('validator')
 
+const Profile = require('./profile')
+
 const userSchema = new Schema(
 	{
 		email: {
@@ -21,6 +23,11 @@ const userSchema = new Schema(
 			type: String,
 			required: true
 		},
+		profile: {
+			type: Schema.Types.ObjectId,
+			ref: 'profile',
+			required: true,
+		}
 	}
 )
 
@@ -40,7 +47,8 @@ userSchema.statics.register = async function(email, password, name) {
 	}
 	const salt = await bcrypt.genSalt()
 	const hashedPassword = await bcrypt.hash(password, salt)
-	const user = await this.create({ email, password: hashedPassword, name })
+	const profile = await Profile.create({ description: '' })
+	const user = await this.create({ email, password: hashedPassword, name, profile: profile._id })
 	return user
 }
 
