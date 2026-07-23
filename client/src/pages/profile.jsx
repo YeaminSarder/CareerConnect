@@ -9,7 +9,7 @@ const Home = () => {
     const { user } = useAuthContext()
     useEffect(() => {
         const fetchProfile = async () => {
-            const response = await fetch(`${process.env.REACT_APP_URI}/api/profile`, {
+            const response = await fetch(`${process.env.REACT_APP_URI}/api/myprofile`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -17,6 +17,8 @@ const Home = () => {
             const json = await response.json()
             if (response.ok) {
                 dispatch({ type: 'SET_PROFILE', payload: json })
+            } else {
+                console.error('Failed to fetch profile:', json.error)
             }
         }
         if (user) {
@@ -28,6 +30,7 @@ const Home = () => {
         <div className="m-4">
             <h1 className="font-bold">{user ? user.name : 'Guest'}</h1>
             <p>Email: {user ? user.email : 'Not available'}</p>
+            <p>{state.profile && state.profile.description ? state.profile.description : (<span className="text-gray-400">Edit your profile to add description</span>)}</p>
         </div>
         {/* <div className="home">
             <Stack direction="horizontal" gap={3} className="mb-3 align-items-start">
