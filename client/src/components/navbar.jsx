@@ -29,7 +29,7 @@ const Navbar = () =>  {
                 {user ? (
                   <Nav.Item>
                     <Link to="/profile" className="nav-link">
-                      {user.email}
+                      {user.name}
                     </Link>
                   </Nav.Item>
                 ) : (

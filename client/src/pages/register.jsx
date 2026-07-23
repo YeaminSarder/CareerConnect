@@ -8,11 +8,12 @@ import { Link } from "react-router-dom";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const { register, isLoading, error } = useRegister();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register(email, password);
+    await register(email, password, name);
   };
   return (
     <>
@@ -26,7 +27,15 @@ const Register = () => {
             <hr className="my-4" />
     <AppForm.Form onSubmit={handleSubmit}>
       <AppForm.Header> Register to CareerConnect </AppForm.Header>
-    
+      <AppForm.Group>
+        {/* <AppForm.Label>Name:</AppForm.Label> */}
+        <AppForm.Control
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+        />
+      </AppForm.Group>
       <AppForm.Group>
         {/* <AppForm.Label>Email:</AppForm.Label> */}
         <AppForm.Control

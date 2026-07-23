@@ -24,7 +24,12 @@ const Home = () => {
         }
     }, [user, dispatch])
     return (
-        <div className="home">
+        <>
+        <div className="m-4">
+            <h1 className="font-bold">{user ? user.name : 'Guest'}</h1>
+            <p>Email: {user ? user.email : 'Not available'}</p>
+        </div>
+        {/* <div className="home">
             <Stack direction="horizontal" gap={3} className="mb-3 align-items-start">
             <div>
             {state.profile && state.profile.map((profile) => (
@@ -35,7 +40,8 @@ const Home = () => {
             <ProfileForm className="ms-auto" style={{ maxWidth: '400px' }} />
             </div>
             </Stack>
-        </div>
+        </div> */}
+        </>
     )
 }
 
