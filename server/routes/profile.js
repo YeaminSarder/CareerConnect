@@ -1,15 +1,14 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
-const Profile = require('../models/profile')
-const controller = require('../controllers')
-const requireAuth = require('../middleware/require-auth')
+import profileController from '../controllers/profile.js'
+import requireAuth from '../middleware/require-auth.js'
 
 router.use(requireAuth)
 
-router.get('/', controller.profile.getProfiles)
-router.get('/:id', controller.profile.getProfile)
-router.patch('/:id', controller.profile.updateProfile)
-router.delete('/:id', controller.profile.deleteProfile)
-router.post('/', controller.profile.createProfile)
+router.get('/', profileController.getProfiles)
+router.get('/:id', profileController.getProfile)
+router.patch('/:id', profileController.updateProfile)
+router.delete('/:id', profileController.deleteProfile)
+router.post('/', profileController.createProfile)
 
-module.exports = router
+export default router

@@ -1,4 +1,4 @@
 const profile = require('./profile')
-module.exports = {
+export default {
 	profile
 }

@@ -1,10 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const myprofileController = require('../controllers/myprofile')
-const requireAuth = require('../middleware/require-auth')
+import express from 'express'
+import myprofileController from '../controllers/myprofile.js'
+import requireAuth  from '../middleware/require-auth.js'
 
+const router = express.Router()
 router.use(requireAuth)
 
 router.get('/', myprofileController.getProfile)
 
-module.exports = router
+export default router

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const Schema = mongoose.Schema
 
@@ -12,4 +12,4 @@ const profileSchema = new Schema(
 	{ timestamps: true}
 )
 
-module.exports = mongoose.model('profile', profileSchema)
+export default mongoose.model('profile', profileSchema)

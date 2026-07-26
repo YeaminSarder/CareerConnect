@@ -1,7 +1,12 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
 
-router.use('/profile', require('./profile'))
-router.use('/user', require('./user'))
-router.use('/myprofile', require('./myprofile'))
-module.exports = router
+import profileRoute from './profile.js'
+import myProfileRoute from './myprofile.js'
+import userRoute from './user.js'
+
+router.use('/profile', profileRoute)
+router.use('/myprofile', myProfileRoute)
+router.use('/user', userRoute)
+
+export default router

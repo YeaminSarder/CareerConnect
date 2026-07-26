@@ -1,5 +1,5 @@
-const Profile = require("../models/profile");
-const mongoose = require('mongoose')
+import Profile from "../models/profile.js";
+import mongoose from 'mongoose'
 // GET /api/profiles
 const getProfiles = async (req, res) => {
     try {
@@ -103,7 +103,7 @@ const deleteProfile = async (req, res) => {
     }
 };
 
-module.exports = {
+export default {
     getProfiles,
     getProfile,
     createProfile,

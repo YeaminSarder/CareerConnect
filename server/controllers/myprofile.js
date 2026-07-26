@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Profile = require('../models/profile');
+import mongoose from 'mongoose';
+import Profile from '../models/profile.js'
 const getProfile = async (req, res) => {
     try {
         const id = req.user.profile;
@@ -20,7 +20,6 @@ const getProfile = async (req, res) => {
         res.status(400).json({ error: err.message });
     }
 };
-
-module.exports = {
+export default {
     getProfile
 };
