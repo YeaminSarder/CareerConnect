@@ -3,7 +3,7 @@ import AppForm from "../components/app-form";
 import Button from "react-bootstrap/Button";
 import useRegister from "../hooks/use-register";
 import { Error } from "../components/error";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const Register = () => {
   const [email, setEmail] = useState("");

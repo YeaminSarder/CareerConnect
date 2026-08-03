@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom' 
+import { BrowserRouter, Routes, Route } from 'react-router' 
 
 import Home from './pages/home'
 import Cv from './pages/cv'
@@ -7,7 +7,7 @@ import Profile from './pages/profile'
 import Register from './pages/register'
 import Login from './pages/login'
 import { useAuthContext } from './hooks/use-auth-context'
-import { Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router'
 function App() {
   const { user } = useAuthContext()
   return (

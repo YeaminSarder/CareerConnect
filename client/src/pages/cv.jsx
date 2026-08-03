@@ -2,29 +2,18 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { Error } from '../components/error'
 import { useAuthContext } from '../hooks/use-auth-context'
+import { useCv } from '../hooks/use-cv'
 
 const Cv = () => {
     const [error, setError] = useState(null)
-    const [cv, setCv] = useState(null)
+    const { cv, setCv, getMyCvs, error: cvError } = useCv()
     const { user } = useAuthContext()
     useEffect( ()=> {
-    async function fetchCv() {
-        const response = await fetch(`${process.env.REACT_APP_URI}/api/cv`,
-        {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        }
-        )
-        const cv = await response.json()
-        if (cv) {
-            setCv(cv)
-        }
-    }
+    
     if (user) {
-        fetchCv()
+        getMyCvs()
     }
-    },[user, setCv])
+    },[user, setCv, setError, getMyCvs])
 
     function tryRender() {
         try {
@@ -41,7 +30,7 @@ const Cv = () => {
         {cv ? (
             <>
             <div className="m-2 max-w-sm">
-                <Error message={cv.error || error} />
+                <Error message={cv.error || error || cvError} />
             </div>
             <div>
                 {tryRender()}

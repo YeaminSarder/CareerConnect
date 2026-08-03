@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { Navbar as RNavbar, Nav, Container, Button } from 'react-bootstrap'
 import { useLogout } from '../hooks/use-logout'
 import { useAuthContext } from '../hooks/use-auth-context'

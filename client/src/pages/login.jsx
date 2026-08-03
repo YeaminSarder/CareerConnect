@@ -3,7 +3,7 @@ import AppForm from "../components/app-form";
 import Button from "react-bootstrap/Button";
 import useLogin from "../hooks/use-login";
 import { Error } from "../components/error";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const Login = () => {
   const [email, setEmail] = useState("");
