@@ -1,5 +1,5 @@
 import Cv from '../models/cv.js';
-
+import mongoose from 'mongoose';
 // Get all CVs
 export const getAllCvs = async (req, res) => {
     try {
@@ -59,10 +59,33 @@ export const deleteCv = async (req, res) => {
     }
 };
 
+export const getMyCvs = async (req, res) => {
+    try {
+        const id = req.user._id;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({"error":"invalid user",id: id})
+        }
+
+        const cvs = await Cv.find({ user: id });
+
+        if (!cvs) {
+            return res.status(404).json({
+                error: "No CVs found for this user",
+            });
+        }
+
+        res.status(200).json(cvs);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+
 export default {
     getAllCvs,
     getCvById,
     createCv,
     updateCv,
-    deleteCv
+    deleteCv,
+    getMyCvs
 };

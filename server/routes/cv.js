@@ -6,7 +6,7 @@ const router = Router();
 console.log(CvController.createCv)
 router.use(requireAuth);
 
-//router.get('/', CvController.getAllCvs);
+router.get('/', CvController.getMyCvs);
 //router.get('/:id', CvController.getCvById);
 router.post('/', CvController.createCv);
 //router.patch('/:id', CvController.updateCv);
