@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom' 
 
 import Home from './pages/home'
+import Cv from './pages/cv'
 import Navbar from './components/navbar'
 import Profile from './pages/profile'
 import Register from './pages/register'
@@ -17,6 +18,10 @@ function App() {
           <Route
             path='/'
             element={user ? <Home /> : <Navigate to="/login" /> }
+          />
+          <Route
+            path='/cv'
+            element=<Cv/>
           />
           <Route
             path='/profile'

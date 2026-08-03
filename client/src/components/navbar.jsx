@@ -26,6 +26,13 @@ const Navbar = () =>  {
                     Home
                   </Link>
                 </Nav.Item>
+                {user && (
+                  <Nav.Item>
+                    <Link to="/cv" className="nav-link">
+                      CV
+                    </Link>
+                  </Nav.Item>
+                )}
                 {user ? (
                   <Nav.Item>
                     <Link to="/profile" className="nav-link">
