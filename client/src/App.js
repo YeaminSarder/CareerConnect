@@ -21,7 +21,7 @@ function App() {
           />
           <Route
             path='/cv'
-            element=<Cv/>
+            element={user ? <Cv /> : <Navigate to="/login" /> }
           />
           <Route
             path='/profile'
