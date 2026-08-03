@@ -1,49 +1,60 @@
 import { useEffect } from 'react'
-import { useState } from 'react'
 import { Error } from '../components/error'
 import { useAuthContext } from '../hooks/use-auth-context'
 import { useCv } from '../hooks/use-cv'
+import { CvHeader } from '../components/cv/header'
+import { CvGrid } from '../components/cv/grid'
+import { EmptyCv } from '../components/cv/empty'
 
 const Cv = () => {
-    const [error, setError] = useState(null)
     const { cv, setCv, getMyCvs, error: cvError } = useCv()
     const { user } = useAuthContext()
-    useEffect( ()=> {
-    
-    if (user) {
-        getMyCvs()
-    }
-    },[user, setCv, setError, getMyCvs])
+    useEffect(() => {
 
-    function tryRender() {
-        try {
-            return cv.map((item) => (
-            <p key={item._id}>{item.title}</p>
-        ))
-        } catch (err) {
-            !error && setError(err)
+        if (user) {
+            getMyCvs()
         }
-    }
+    }, [user, setCv, getMyCvs])
+
 
     return (
-        <>
-        {cv ? (
-            <>
+        <div className="m-3">
             <div className="m-2 max-w-sm">
-                <Error message={cv.error || error || cvError} />
+                <Error message={cvError} />
             </div>
-            <div>
-                {tryRender()}
-            </div>
-            <div>
-                {JSON.stringify(cv)}
-            </div>
-            </>
-        ) : (
-            <p>Loading...</p>
-        )}
-        </>
+
+
+            <CvHeader onCreate={handleCreateCv} />
+
+            {!cv || cv.length === 0 ? (
+                <EmptyCv onCreate={handleCreateCv} />
+            ) : (
+                <CvGrid
+                    cvs={cv}
+                    onView={handleViewCv}
+                    onEdit={handleEditCv}
+                    onDelete={handleDeleteCv}
+                />
+            )}
+        </div>
     )
-    
 }
+
+function handleCreateCv() {
+    // Implement the logic to create a new CV
+}
+
+function handleViewCv(cvId) {
+    // Implement the logic to view a CV
+}
+
+function handleEditCv(cvId) {
+    // Implement the logic to edit a CV
+}
+
+function handleDeleteCv(cvId) {
+    // Implement the logic to delete a CV
+}   
+
 export default Cv
+
