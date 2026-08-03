@@ -1,5 +1,21 @@
 import Cv from '../models/cv.js';
 import mongoose from 'mongoose';
+
+export const validateCvId = async (req, res, next, id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid CV ID' });
+    }
+    const cv = await Cv.findById(id);
+    if (!cv) {
+        return res.status(404).json({ error: 'CV not found' });
+    }
+    if (cv.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ error: 'Unauthorized access to this CV' });
+    }
+    req.cv = cv;
+    next();
+}
+
 // Get all CVs
 export const getAllCvs = async (req, res) => {
     try {
@@ -13,11 +29,7 @@ export const getAllCvs = async (req, res) => {
 // Get a single CV by ID
 export const getCvById = async (req, res) => {
     try {
-        const cv = await Cv.findById(req.params.id);
-        if (!cv) {
-            return res.status(404).json({ message: 'CV not found' });
-        }
-        res.json(cv);
+        res.json(req.cv);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -36,7 +48,7 @@ export const createCv = async function createCv(req, res) {
 // Update a CV
 export const updateCv = async (req, res) => {
     try {
-        const cv = await Cv.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const cv = await req.cv.updateOne(req.body, { new: true, runValidators: true });
         if (!cv) {
             return res.status(404).json({ message: 'CV not found' });
         }
@@ -49,10 +61,7 @@ export const updateCv = async (req, res) => {
 // Delete a CV
 export const deleteCv = async (req, res) => {
     try {
-        const cv = await Cv.findByIdAndDelete(req.params.id);
-        if (!cv) {
-            return res.status(404).json({ message: 'CV not found' });
-        }
+        await req.cv.deleteOne();
         res.json({ message: 'CV deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -66,7 +75,7 @@ export const getMyCvs = async (req, res) => {
             return res.status(404).json({"error":"invalid user",id: id})
         }
 
-        const cvs = await Cv.find({ user: id });
+        const cvs = await Cv.find({ ...req.body, user: id });
 
         if (!cvs) {
             return res.status(404).json({
@@ -87,5 +96,6 @@ export default {
     createCv,
     updateCv,
     deleteCv,
-    getMyCvs
+    getMyCvs,
+    validateCvId
 };
