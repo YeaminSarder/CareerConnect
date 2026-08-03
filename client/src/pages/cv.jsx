@@ -1,13 +1,21 @@
 import { useEffect } from 'react'
 import { Error } from '../components/error'
 import { useAuthContext } from '../hooks/use-auth-context'
-import { useCv } from '../hooks/use-cv'
+
+import { 
+    useCv,
+    useDeleteCv,
+    useCreateCv
+} from '../hooks/use-cv'
 import { CvHeader } from '../components/cv/header'
 import { CvGrid } from '../components/cv/grid'
 import { EmptyCv } from '../components/cv/empty'
 
+
 const Cv = () => {
     const { cv, setCv, getMyCvs, error: cvError } = useCv()
+    const { deleteCv, error: deleteError } = useDeleteCv()
+    const { createCv, error: createError } = useCreateCv()
     const { user } = useAuthContext()
     useEffect(() => {
 
@@ -20,7 +28,9 @@ const Cv = () => {
     return (
         <div className="m-3">
             <div className="m-2 max-w-sm">
-                <Error message={cvError} />
+                <Error message={
+                    cvError || deleteError || createError
+                    } />
             </div>
 
 
@@ -38,23 +48,23 @@ const Cv = () => {
             )}
         </div>
     )
+
+
+    function handleCreateCv() {
+        createCv({ title: "Untitled CV" })
+    }
+
+    function handleViewCv(cvId) {
+        // Implement the logic to view a CV
+    }
+
+    function handleEditCv(cvId) {
+        // Implement the logic to edit a CV
+    }
+
+    function handleDeleteCv(cv) {
+        deleteCv(cv._id)
+    }
 }
-
-function handleCreateCv() {
-    // Implement the logic to create a new CV
-}
-
-function handleViewCv(cvId) {
-    // Implement the logic to view a CV
-}
-
-function handleEditCv(cvId) {
-    // Implement the logic to edit a CV
-}
-
-function handleDeleteCv(cvId) {
-    // Implement the logic to delete a CV
-}   
-
 export default Cv
 
