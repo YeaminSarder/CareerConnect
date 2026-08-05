@@ -1,73 +1,38 @@
 import { useState } from "react";
-import { 
-    getMyCvs as apiGetMyCvs, 
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    getMyCvs as apiGetMyCvs,
     deleteCv as apiDeleteCv,
     createCv as apiCreateCv
 } from "../api/cv";
 export const useCv = () => {
-    const [cv, setCv] = useState(null);
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false)
-    const getMyCvs = async () => {
-        try {
-            setIsLoading(true)
-            const response = await apiGetMyCvs();
-            if (!response.data) {
-                throw new Error('Failed to fetch CVs');
-            }
-            const data = response.data;
-            setCv(data);
-            setIsLoading(false)
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return { cv, setCv, error, setError, getMyCvs, isLoading, setIsLoading };
+    const { isPending, isError, data, error } = useQuery({ queryKey: ['myCvs'], queryFn: apiGetMyCvs })
+    if (isError) {
+        return { isPending, isError, cv: null, error: `Error fetching CVs: ${error?.response?.data?.error || error.message}` };
+    }
+    return { isPending, isError, cv: data?.data || null, error };
 };
 
 export const useDeleteCv = () => {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false)
-    const deleteCv = async (cvId) => {
-        try {
-            setIsLoading(true)
-            const {data} = await apiDeleteCv(cvId);
-            if (!data) {
-                throw new Error('Failed to delete CV');
+    const queryClient = useQueryClient();
+    const mutation = useMutation(
+        { mutationFn: apiDeleteCv,
+            onSuccess: async() => {
+                queryClient.invalidateQueries({ queryKey: ['myCvs'] })
             }
-            setIsLoading(false)
-        } catch (err) {
-            setError(`Error deleting CV: ${err.response?.data?.error || err.message}`);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return { deleteCv, error, setError, isLoading, setIsLoading };
+         })
+    return {...mutation, deleteCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
 };
 
 export const useCreateCv = () => {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false)
-    const createCv = async (cvData) => {
-        try {
-            setIsLoading(true)
-            const {data} = await apiCreateCv(cvData);
-            if (!data) {
-                throw new Error('Failed to create CV');
+    const queryClient = useQueryClient();
+    const mutation = useMutation(
+        { mutationFn: apiCreateCv,
+            onSuccess: async() => {
+                queryClient.invalidateQueries({ queryKey: ['myCvs'] })
             }
-            setIsLoading(false)
-        } catch (err) {
-            setError(`Error creating CV: ${err.response?.data?.error || err.message}`);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return { createCv, error, setError, isLoading, setIsLoading };
+         })
+    return {...mutation, createCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
 };
 
 export default useCv;

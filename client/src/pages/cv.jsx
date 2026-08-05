@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Error } from '../components/error'
-import { useAuthContext } from '../hooks/use-auth-context'
+import { useNavigate } from 'react-router'
 
 import { 
     useCv,
@@ -13,17 +13,10 @@ import { EmptyCv } from '../components/cv/empty'
 
 
 const Cv = () => {
-    const { cv, setCv, getMyCvs, error: cvError } = useCv()
+    const { cv, error: cvError } = useCv()
     const { deleteCv, error: deleteError } = useDeleteCv()
     const { createCv, error: createError } = useCreateCv()
-    const { user } = useAuthContext()
-    useEffect(() => {
-
-        if (user) {
-            getMyCvs()
-        }
-    }, [user, setCv, getMyCvs])
-
+    const navigate = useNavigate()
 
     return (
         <div className="m-3">
@@ -58,8 +51,8 @@ const Cv = () => {
         // Implement the logic to view a CV
     }
 
-    function handleEditCv(cvId) {
-        // Implement the logic to edit a CV
+    function handleEditCv(cv) {
+        navigate(`/cv/edit/${cv._id}`)
     }
 
     function handleDeleteCv(cv) {
