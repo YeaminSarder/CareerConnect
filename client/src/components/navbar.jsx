@@ -27,11 +27,28 @@ const Navbar = () =>  {
                   </Link>
                 </Nav.Item>
                 {user && (
-                  <Nav.Item>
-                    <Link to="/cv" className="nav-link">
-                      CV
-                    </Link>
-                  </Nav.Item>
+                  <>
+                    <Nav.Item>
+                      <Link to="/cv" className="nav-link">
+                        CV
+                      </Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Link to="/internships" className="nav-link">
+                        Internships
+                      </Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Link to="/connections" className="nav-link">
+                        Connections
+                      </Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Link to="/analytics" className="nav-link">
+                        Analytics
+                      </Link>
+                    </Nav.Item>
+                  </>
                 )}
                 {user ? (
                   <Nav.Item>
