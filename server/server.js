@@ -26,10 +26,13 @@ app.use((err, req, res, next) => {
         error: "Internal Server Error"
     });
 });
+import seedDatabase from './seed.js'
+
 mongoose.connect(process.env.MONGO_URI)
-	.then( () => { 
-      app.listen(process.env.PORT,() => {
-	    console.log("connected to db and listening..")
-      })
-    }).catch( (err) => {console.log (err.message)}
+	.then(async () => {
+		await seedDatabase()
+		app.listen(process.env.PORT, () => {
+			console.log("connected to db and listening..")
+		})
+	}).catch((err) => { console.log(err.message) }
 )
