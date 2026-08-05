@@ -6,6 +6,7 @@ import Navbar from './components/navbar'
 import Profile from './pages/profile'
 import Register from './pages/register'
 import Login from './pages/login'
+import { CvEdit } from './pages/cv-edit'
 import { useAuthContext } from './hooks/use-auth-context'
 import { Navigate } from 'react-router'
 function App() {
@@ -34,6 +35,10 @@ function App() {
           <Route
             path='/login'
             element={!user ? <Login /> : <Navigate to="/profile" /> }
+          />
+          <Route
+            path='/cv/edit/:cvId'
+            element={user ? <CvEdit/> : <Navigate to="/login" /> }
           />
         </Routes>
 	  </BrowserRouter>
