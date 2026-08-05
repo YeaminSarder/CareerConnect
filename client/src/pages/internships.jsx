@@ -16,7 +16,7 @@ const InternshipsPage = () => {
 			if (filters.skill) queryParams.append('skill', filters.skill)
 			if (filters.status) queryParams.append('status', filters.status)
 
-			const res = await axios.get(`/api/internships?${queryParams.toString()}`)
+			const res = await axios.get(`/internships?${queryParams.toString()}`)
 			setInternships(res.data || [])
 		} catch (err) {
 			console.error('Error fetching internships:', err)

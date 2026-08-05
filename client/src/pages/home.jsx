@@ -24,7 +24,7 @@ const Home = () => {
 
     const fetchPosts = async () => {
         try {
-            const res = await axios.get('/api/posts')
+            const res = await axios.get('/posts')
             if (res.data && res.data.length > 0) {
                 setPosts(res.data)
             }
@@ -43,9 +43,8 @@ const Home = () => {
         setPosting(true)
         try {
             await axios.post(
-                '/api/posts',
-                { title: newPostTitle, content: newPostContent },
-                { headers: { Authorization: `Bearer ${user.token}` } }
+                '/posts',
+                { title: newPostTitle, content: newPostContent }
             )
             setNewPostTitle('')
             setNewPostContent('')

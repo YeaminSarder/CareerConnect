@@ -111,9 +111,48 @@ export const getPendingRequests = async (req, res) => {
 	}
 }
 
+// GET /api/connections/search-users?search=... (FR-4: Recommend / Search Users by Name)
+export const searchUsersByName = async (req, res) => {
+	try {
+		const { search } = req.query
+		const userId = req.user._id
+
+		const query = { _id: { $ne: userId } }
+		if (search && search.trim().length > 0) {
+			query.$or = [
+				{ name: { $regex: search, $options: 'i' } },
+				{ email: { $regex: search, $options: 'i' } }
+			]
+		}
+
+		const users = await User.find(query).select('name email profile').populate('profile').limit(10)
+		res.status(200).json(users)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+// GET /api/connections/featured-users (FR-4: Recommended Featured Accounts)
+export const getFeaturedUsers = async (req, res) => {
+	try {
+		const userId = req.user._id
+		const users = await User.find({ _id: { $ne: userId } })
+			.select('name email profile')
+			.populate('profile')
+			.limit(6)
+
+		res.status(200).json(users)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
 export default {
 	sendConnectionRequest,
 	updateConnectionStatus,
 	getMyConnections,
-	getPendingRequests
+	getPendingRequests,
+	searchUsersByName,
+	getFeaturedUsers
 }
+

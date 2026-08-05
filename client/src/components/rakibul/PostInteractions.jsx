@@ -15,7 +15,7 @@ const PostInteractions = ({ post, onPostUpdate }) => {
 		if (!user) return
 		try {
 			const res = await axios.patch(
-				`/api/posts/${post._id}/like`,
+				`/posts/${post._id}/like`,
 				{},
 				{ headers: { Authorization: `Bearer ${user.token}` } }
 			)
@@ -29,7 +29,7 @@ const PostInteractions = ({ post, onPostUpdate }) => {
 		if (!user) return
 		try {
 			const res = await axios.patch(
-				`/api/posts/${post._id}/save`,
+				`/posts/${post._id}/save`,
 				{},
 				{ headers: { Authorization: `Bearer ${user.token}` } }
 			)
@@ -45,7 +45,7 @@ const PostInteractions = ({ post, onPostUpdate }) => {
 		setLoading(true)
 		try {
 			const res = await axios.post(
-				`/api/posts/${post._id}/comment`,
+				`/posts/${post._id}/comment`,
 				{ text: commentText },
 				{ headers: { Authorization: `Bearer ${user.token}` } }
 			)

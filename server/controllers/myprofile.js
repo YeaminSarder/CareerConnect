@@ -15,7 +15,15 @@ const getProfile = async (req, res) => {
             });
         }
 
-        res.status(200).json(profile);
+        const completion = typeof profile.getCompletionScore === 'function'
+            ? profile.getCompletionScore()
+            : { completionPercentage: 0, missingFields: [] };
+
+        res.status(200).json({
+            ...profile.toObject(),
+            completionPercentage: completion.completionPercentage,
+            missingFields: completion.missingFields
+        });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }

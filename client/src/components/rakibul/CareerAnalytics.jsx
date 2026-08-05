@@ -11,7 +11,7 @@ const CareerAnalytics = () => {
 		const fetchAnalytics = async () => {
 			if (!user) return
 			try {
-				const res = await axios.get('/api/analytics/student', {
+				const res = await axios.get('/analytics/student', {
 					headers: { Authorization: `Bearer ${user.token}` }
 				})
 				setAnalytics(res.data)
