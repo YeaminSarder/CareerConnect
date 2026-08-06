@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
     getMyCvs as apiGetMyCvs,
     deleteCv as apiDeleteCv,
-    createCv as apiCreateCv
+    createCv as apiCreateCv,
+    updateCv as apiUpdateCv
 } from "../api/cv";
 export const useCv = () => {
     const { isPending, isError, data, error } = useQuery({ queryKey: ['myCvs'], queryFn: apiGetMyCvs })
@@ -22,6 +23,17 @@ export const useDeleteCv = () => {
             }
          })
     return {...mutation, deleteCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
+};
+
+export const useUpdateCv = (setError) => {
+    const queryClient = useQueryClient();
+    const mutation = useMutation(
+        { mutationFn: (p)=>apiUpdateCv(p.id, p.data).catch((error) => {setError(error?.response?.data?.error || error.message)}),
+            onSuccess: async() => {
+                queryClient.invalidateQueries({ queryKey: ['myCvs'] })
+            }
+         })
+    return {...mutation, updateCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
 };
 
 export const useCreateCv = () => {
