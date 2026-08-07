@@ -40,6 +40,21 @@ const InternshipsPage = () => {
 		setInternships((prev) => [newJob, ...prev])
 	}
 
+	const handleDeleteInternship = async (id) => {
+		if (!window.confirm('Are you sure you want to delete this internship post?')) return
+		try {
+			await axios.delete(`/internships/${id}`, {
+				headers: {
+					Authorization: `Bearer ${user?.token}`
+				}
+			})
+			setInternships((prev) => prev.filter((j) => j._id !== id))
+		} catch (err) {
+			console.error('Error deleting internship:', err)
+			alert(err.response?.data?.error || 'Failed to delete internship post.')
+		}
+	}
+
 	return (
 		<div className="container py-4">
 			<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
@@ -86,30 +101,80 @@ const InternshipsPage = () => {
 				<div className="row g-3">
 					{internships.map((job) => (
 						<div key={job._id} className="col-md-6">
-							<div className="card shadow-sm border-0 h-100 p-3 rounded-3">
+							<div className="card shadow-sm border-0 h-100 p-3 rounded-3 position-relative">
 								<div className="d-flex justify-content-between align-items-start mb-2">
 									<div>
-										<h5 className="fw-bold mb-1">{job.title}</h5>
-										<h6 className="text-secondary mb-0">{job.company}</h6>
+										<h5 className="fw-bold mb-1 text-dark">{job.title}</h5>
+										<h6 className="text-primary mb-0 fw-semibold">
+											<i className="bi bi-building me-1"></i>{job.company}
+										</h6>
 									</div>
-									<span className={`badge ${job.workMode === 'Remote' ? 'bg-info' : job.workMode === 'Hybrid' ? 'bg-warning text-dark' : 'bg-secondary'}`}>
-										{job.workMode}
-									</span>
-								</div>
-
-								<p className="text-muted small mb-2">{job.description}</p>
-
-								<div className="d-flex flex-wrap gap-1 mb-3">
-									{job.requiredSkills && job.requiredSkills.map((s, i) => (
-										<span key={i} className="badge bg-light text-dark border">
-											{s}
+									<div className="d-flex align-items-center gap-2">
+										<span className={`badge ${job.workMode === 'Remote' ? 'bg-info text-dark' : job.workMode === 'Hybrid' ? 'bg-warning text-dark' : 'bg-secondary'}`}>
+											{job.workMode}
 										</span>
-									))}
+										{isRecruiterOrAdmin && (
+											<button
+												className="btn btn-sm btn-outline-danger border-0 p-1"
+												onClick={() => handleDeleteInternship(job._id)}
+												title="Delete internship post"
+											>
+												<i className="bi bi-trash-fill"></i>
+											</button>
+										)}
+									</div>
 								</div>
 
+								{job.description && (
+									<p className="text-muted small mb-2">{job.description}</p>
+								)}
+
+								{/* Eligibility Criteria */}
+								{job.eligibilityCriteria && (
+									<div className="bg-light p-2 rounded-2 mb-2 border-start border-3 border-primary">
+										<small className="fw-bold d-block text-secondary mb-1">
+											<i className="bi bi-card-checklist me-1 text-primary"></i>Eligibility Criteria:
+										</small>
+										<small className="text-dark d-block">{job.eligibilityCriteria}</small>
+									</div>
+								)}
+
+								{/* Required Skills */}
+								{job.requiredSkills && job.requiredSkills.length > 0 && (
+									<div className="d-flex flex-wrap gap-1 mb-3">
+										{job.requiredSkills.map((s, i) => (
+											<span key={i} className="badge bg-light text-dark border">
+												{s}
+											</span>
+										))}
+									</div>
+								)}
+
+								{/* Info Row: Salary & Deadline */}
+								<div className="row g-2 small text-muted mb-3 bg-white p-1 rounded">
+									{job.salaryRange && (
+										<div className="col-6">
+											<i className="bi bi-cash-stack me-1 text-success"></i>
+											<span className="fw-medium text-dark">{job.salaryRange}</span>
+										</div>
+									)}
+									{job.deadline && (
+										<div className="col-6 text-end">
+											<i className="bi bi-calendar-event me-1 text-danger"></i>
+											<span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
+										</div>
+									)}
+								</div>
+
+								{/* Card Footer */}
 								<div className="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
 									<small className="text-muted">
 										<i className="bi bi-geo-alt me-1"></i>{job.location}
+										{job.postedBy?.name && (
+											<span className="ms-2 badge bg-secondary-subtle text-secondary border">
+												Recruiter: {job.postedBy.name}
+											</span>
+										)}
 									</small>
 									<button className="btn btn-sm btn-primary">Apply Now</button>
 								</div>
@@ -124,6 +189,14 @@ const InternshipsPage = () => {
 					<p className="text-muted small">Try adjusting your filters or search keywords.</p>
 				</div>
 			)}
+
+			{/* Modal for Recruiter / Admin Posting */}
+			<InternshipPostModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				onPostCreated={handlePostCreated}
+				userToken={user?.token}
+			/>
 		</div>
 	)
 }
