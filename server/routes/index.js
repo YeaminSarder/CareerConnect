@@ -9,6 +9,7 @@ import connectionRoute from './connection.js'
 import postRoute from './post.js'
 import internshipRoute from './internship.js'
 import analyticsRoute from './analytics.js'
+import applicationRoute from './application.js'
 
 router.use('/profile', profileRoute)
 router.use('/myprofile', myProfileRoute)
@@ -18,6 +19,7 @@ router.use('/connections', connectionRoute)
 router.use('/posts', postRoute)
 router.use('/internships', internshipRoute)
 router.use('/analytics', analyticsRoute)
+router.use('/applications', applicationRoute)
 
 export default router
 
