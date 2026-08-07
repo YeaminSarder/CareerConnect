@@ -33,6 +33,14 @@ const internshipSchema = new Schema(
 			type: String,
 			default: ''
 		},
+		eligibilityCriteria: {
+			type: String,
+			default: ''
+		},
+		postedBy: {
+			type: Schema.Types.ObjectId,
+			ref: 'user'
+		},
 		status: {
 			type: String,
 			enum: ['Open', 'Closed'],

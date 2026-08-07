@@ -27,11 +27,16 @@ const userSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: 'profile',
 			required: true,
+		},
+		role: {
+			type: String,
+			enum: ['student', 'recruiter', 'admin'],
+			default: 'student'
 		}
 	}
 )
 
-userSchema.statics.register = async function(email, password, name) {
+userSchema.statics.register = async function(email, password, name, role = 'student') {
 	if (!email || !password || !name) {
 		throw new Error('All fields must be filled')
 	}
@@ -45,10 +50,13 @@ userSchema.statics.register = async function(email, password, name) {
 	if (existingUser) {
 		throw new Error('Email already in use')
 	}
+	const validRoles = ['student', 'recruiter', 'admin']
+	const userRole = validRoles.includes(role) ? role : 'student'
+
 	const salt = await bcrypt.genSalt()
 	const hashedPassword = await bcrypt.hash(password, salt)
 	const profile = await Profile.create({ description: '' })
-	const user = await this.create({ email, password: hashedPassword, name, profile: profile._id })
+	const user = await this.create({ email, password: hashedPassword, name, profile: profile._id, role: userRole })
 	return user
 }
 

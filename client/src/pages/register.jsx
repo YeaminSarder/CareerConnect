@@ -9,11 +9,12 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [role, setRole] = useState("student");
   const { register, isLoading, error } = useRegister();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register(email, password, name);
+    await register(email, password, name, role);
   };
   return (
     <>
@@ -53,6 +54,17 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
+      </AppForm.Group>
+      <AppForm.Group>
+        <select
+          className="form-select"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="student">Student Account</option>
+          <option value="recruiter">Recruiter Account</option>
+          <option value="admin">Admin Account</option>
+        </select>
       </AppForm.Group>
       <Button type="submit" variant="primary" disabled={isLoading} className="w-100">
         Register
