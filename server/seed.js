@@ -6,6 +6,8 @@ import Profile from './models/profile.js'
 import Internship from './models/internship.js'
 import Post from './models/post.js'
 import Connection from './models/connection.js'
+import Cv from './models/cv.js'
+import Application from './models/application.js'
 
 dotenv.config()
 
