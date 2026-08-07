@@ -73,3 +73,60 @@ export const getMyApplications = async (req, res) => {
 		res.status(500).json({ error: err.message })
 	}
 }
+
+// PATCH /api/applications/:id/status - Update application status (recruiter/admin)
+export const updateApplicationStatus = async (req, res) => {
+	try {
+		const { id } = req.params
+		const { status } = req.body
+
+		const validStatuses = ['Applied', 'Under Review', 'Interviewing', 'Accepted', 'Rejected']
+		if (!validStatuses.includes(status)) {
+			return res.status(400).json({ error: 'Invalid application status' })
+		}
+
+		const application = await Application.findByIdAndUpdate(
+			id,
+			{ status },
+			{ new: true }
+		).populate('internship').populate('cv', 'title').populate('student', 'name email')
+
+		if (!application) {
+			return res.status(404).json({ error: 'Application record not found' })
+		}
+
+		res.status(200).json(application)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+// DELETE /api/applications/:id - Withdraw application (student)
+export const withdrawApplication = async (req, res) => {
+	try {
+		const { id } = req.params
+		const studentId = req.user._id
+
+		const application = await Application.findById(id)
+		if (!application) {
+			return res.status(404).json({ error: 'Application record not found' })
+		}
+
+		if (application.student.toString() !== studentId.toString() && req.user.role !== 'admin') {
+			return res.status(403).json({ error: 'Unauthorized: Cannot withdraw this application' })
+		}
+
+		await Application.findByIdAndDelete(id)
+		res.status(200).json({ message: 'Application withdrawn successfully', _id: id })
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+export default {
+	applyForInternship,
+	getMyApplications,
+	updateApplicationStatus,
+	withdrawApplication
+}
+
