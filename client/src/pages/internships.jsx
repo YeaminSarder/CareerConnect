@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import axios from '../api/axios.js'
 import InternshipFilter from '../components/rakibul/InternshipFilter.jsx'
 import InternshipPostModal from '../components/rakibul/InternshipPostModal.jsx'
+import ApplyModal from '../components/rakibul/ApplyModal.jsx'
+import ApplicationTracker from '../components/rakibul/ApplicationTracker.jsx'
+import { getMyApplications, withdrawApplication } from '../api/application.js'
 import { useAuthContext } from '../hooks/use-auth-context.jsx'
 
 const InternshipsPage = () => {
@@ -10,6 +13,12 @@ const InternshipsPage = () => {
 	const [loading, setLoading] = useState(true)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [testRecruiterMode, setTestRecruiterMode] = useState(false)
+
+	// Tab and Application Tracker state
+	const [activeTab, setActiveTab] = useState('discover') // 'discover' | 'tracker'
+	const [myApplications, setMyApplications] = useState([])
+	const [loadingTracker, setLoadingTracker] = useState(false)
+	const [applyTargetJob, setApplyTargetJob] = useState(null)
 
 	const isRecruiterOrAdmin = user?.role === 'recruiter' || user?.role === 'admin' || testRecruiterMode
 
@@ -32,9 +41,25 @@ const InternshipsPage = () => {
 		}
 	}
 
+	const fetchMyApplicationsList = async () => {
+		if (!user) return
+		setLoadingTracker(true)
+		try {
+			const res = await getMyApplications()
+			setMyApplications(res.data || [])
+		} catch (err) {
+			console.error('Error fetching my applications:', err)
+		} finally {
+			setLoadingTracker(false)
+		}
+	}
+
 	useEffect(() => {
 		fetchInternships()
-	}, [])
+		if (user) {
+			fetchMyApplicationsList()
+		}
+	}, [user])
 
 	const handlePostCreated = (newJob) => {
 		setInternships((prev) => [newJob, ...prev])
@@ -54,6 +79,30 @@ const InternshipsPage = () => {
 			alert(err.response?.data?.error || 'Failed to delete internship post.')
 		}
 	}
+
+	const handleOpenApplyModal = (job) => {
+		setApplyTargetJob(job)
+	}
+
+	const handleApplicationSubmitted = (newApp) => {
+		setMyApplications((prev) => [newApp, ...prev])
+	}
+
+	const handleWithdrawApplication = async (appId) => {
+		if (!window.confirm('Are you sure you want to withdraw this application?')) return
+		try {
+			await withdrawApplication(appId)
+			setMyApplications((prev) => prev.filter((a) => a._id !== appId))
+		} catch (err) {
+			console.error('Error withdrawing application:', err)
+			alert(err.response?.data?.error || 'Failed to withdraw application.')
+		}
+	}
+
+	// Set of internship IDs the user has applied to
+	const appliedJobIds = new Set(
+		myApplications.map((app) => app.internship?._id || app.internship)
+	)
 
 	return (
 		<div className="container py-4">
