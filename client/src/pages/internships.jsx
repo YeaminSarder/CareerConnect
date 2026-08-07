@@ -109,10 +109,10 @@ const InternshipsPage = () => {
 			<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 				<div>
 					<h3 className="fw-bold text-primary mb-1">
-						<i className="bi bi-briefcase-fill me-2"></i>Internship Discovery & Matching
+						<i className="bi bi-briefcase-fill me-2"></i>Internship Discovery & Application Tracker
 					</h3>
 					<p className="text-muted small mb-0">
-						Explore active listings or manage internship postings as a recruiter/admin.
+						Explore listings, submit 1-click applications with selected CV versions, and track your progress.
 					</p>
 				</div>
 
@@ -137,106 +137,158 @@ const InternshipsPage = () => {
 				</div>
 			</div>
 
-			{/* FR-18: Multi-filter Search Component */}
-			<InternshipFilter onFilterChange={fetchInternships} />
+			{/* Navigation Tabs: Discover Listings vs Application Tracker */}
+			<ul className="nav nav-pills mb-4 bg-light p-2 rounded-3 border">
+				<li className="nav-item">
+					<button
+						className={`nav-link fw-semibold ${activeTab === 'discover' ? 'active shadow-sm' : 'text-secondary'}`}
+						onClick={() => setActiveTab('discover')}
+					>
+						<i className="bi bi-compass-fill me-2"></i>Explore Listings
+					</button>
+				</li>
+				<li className="nav-item">
+					<button
+						className={`nav-link fw-semibold ${activeTab === 'tracker' ? 'active shadow-sm' : 'text-secondary'}`}
+						onClick={() => setActiveTab('tracker')}
+					>
+						<i className="bi bi-journal-check me-2"></i>My Application Tracker
+						{myApplications.length > 0 && (
+							<span className="badge bg-danger ms-2 rounded-pill">{myApplications.length}</span>
+						)}
+					</button>
+				</li>
+			</ul>
 
-			{loading ? (
-				<div className="text-center py-4">
-					<div className="spinner-border text-primary" role="status">
-						<span className="visually-hidden">Loading internships...</span>
-					</div>
-				</div>
-			) : internships.length > 0 ? (
-				<div className="row g-3">
-					{internships.map((job) => (
-						<div key={job._id} className="col-md-6">
-							<div className="card shadow-sm border-0 h-100 p-3 rounded-3 position-relative">
-								<div className="d-flex justify-content-between align-items-start mb-2">
-									<div>
-										<h5 className="fw-bold mb-1 text-dark">{job.title}</h5>
-										<h6 className="text-primary mb-0 fw-semibold">
-											<i className="bi bi-building me-1"></i>{job.company}
-										</h6>
-									</div>
-									<div className="d-flex align-items-center gap-2">
-										<span className={`badge ${job.workMode === 'Remote' ? 'bg-info text-dark' : job.workMode === 'Hybrid' ? 'bg-warning text-dark' : 'bg-secondary'}`}>
-											{job.workMode}
-										</span>
-										{isRecruiterOrAdmin && (
-											<button
-												className="btn btn-sm btn-outline-danger border-0 p-1"
-												onClick={() => handleDeleteInternship(job._id)}
-												title="Delete internship post"
-											>
-												<i className="bi bi-trash-fill"></i>
-											</button>
-										)}
-									</div>
-								</div>
+			{/* TAB CONTENT 1: DISCOVER LISTINGS */}
+			{activeTab === 'discover' && (
+				<>
+					{/* FR-18: Multi-filter Search Component */}
+					<InternshipFilter onFilterChange={fetchInternships} />
 
-								{job.description && (
-									<p className="text-muted small mb-2">{job.description}</p>
-								)}
-
-								{/* Eligibility Criteria */}
-								{job.eligibilityCriteria && (
-									<div className="bg-light p-2 rounded-2 mb-2 border-start border-3 border-primary">
-										<small className="fw-bold d-block text-secondary mb-1">
-											<i className="bi bi-card-checklist me-1 text-primary"></i>Eligibility Criteria:
-										</small>
-										<small className="text-dark d-block">{job.eligibilityCriteria}</small>
-									</div>
-								)}
-
-								{/* Required Skills */}
-								{job.requiredSkills && job.requiredSkills.length > 0 && (
-									<div className="d-flex flex-wrap gap-1 mb-3">
-										{job.requiredSkills.map((s, i) => (
-											<span key={i} className="badge bg-light text-dark border">
-												{s}
-											</span>
-										))}
-									</div>
-								)}
-
-								{/* Info Row: Salary & Deadline */}
-								<div className="row g-2 small text-muted mb-3 bg-white p-1 rounded">
-									{job.salaryRange && (
-										<div className="col-6">
-											<i className="bi bi-cash-stack me-1 text-success"></i>
-											<span className="fw-medium text-dark">{job.salaryRange}</span>
-										</div>
-									)}
-									{job.deadline && (
-										<div className="col-6 text-end">
-											<i className="bi bi-calendar-event me-1 text-danger"></i>
-											<span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
-										</div>
-									)}
-								</div>
-
-								{/* Card Footer */}
-								<div className="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
-									<small className="text-muted">
-										<i className="bi bi-geo-alt me-1"></i>{job.location}
-										{job.postedBy?.name && (
-											<span className="ms-2 badge bg-secondary-subtle text-secondary border">
-												Recruiter: {job.postedBy.name}
-											</span>
-										)}
-									</small>
-									<button className="btn btn-sm btn-primary">Apply Now</button>
-								</div>
+					{loading ? (
+						<div className="text-center py-4">
+							<div className="spinner-border text-primary" role="status">
+								<span className="visually-hidden">Loading internships...</span>
 							</div>
 						</div>
-					))}
-				</div>
-			) : (
-				<div className="text-center py-5 bg-light rounded-3">
-					<i className="bi bi-search text-muted fs-1 mb-2 d-block"></i>
-					<h5>No internships found</h5>
-					<p className="text-muted small">Try adjusting your filters or search keywords.</p>
-				</div>
+					) : internships.length > 0 ? (
+						<div className="row g-3">
+							{internships.map((job) => {
+								const hasApplied = appliedJobIds.has(job._id)
+								return (
+									<div key={job._id} className="col-md-6">
+										<div className="card shadow-sm border-0 h-100 p-3 rounded-3 position-relative">
+											<div className="d-flex justify-content-between align-items-start mb-2">
+												<div>
+													<h5 className="fw-bold mb-1 text-dark">{job.title}</h5>
+													<h6 className="text-primary mb-0 fw-semibold">
+														<i className="bi bi-building me-1"></i>{job.company}
+													</h6>
+												</div>
+												<div className="d-flex align-items-center gap-2">
+													<span className={`badge ${job.workMode === 'Remote' ? 'bg-info text-dark' : job.workMode === 'Hybrid' ? 'bg-warning text-dark' : 'bg-secondary'}`}>
+														{job.workMode}
+													</span>
+													{isRecruiterOrAdmin && (
+														<button
+															className="btn btn-sm btn-outline-danger border-0 p-1"
+															onClick={() => handleDeleteInternship(job._id)}
+															title="Delete internship post"
+														>
+															<i className="bi bi-trash-fill"></i>
+														</button>
+													)}
+												</div>
+											</div>
+
+											{job.description && (
+												<p className="text-muted small mb-2">{job.description}</p>
+											)}
+
+											{/* Eligibility Criteria */}
+											{job.eligibilityCriteria && (
+												<div className="bg-light p-2 rounded-2 mb-2 border-start border-3 border-primary">
+													<small className="fw-bold d-block text-secondary mb-1">
+														<i className="bi bi-card-checklist me-1 text-primary"></i>Eligibility Criteria:
+													</small>
+													<small className="text-dark d-block">{job.eligibilityCriteria}</small>
+												</div>
+											)}
+
+											{/* Required Skills */}
+											{job.requiredSkills && job.requiredSkills.length > 0 && (
+												<div className="d-flex flex-wrap gap-1 mb-3">
+													{job.requiredSkills.map((s, i) => (
+														<span key={i} className="badge bg-light text-dark border">
+															{s}
+														</span>
+													))}
+												</div>
+											)}
+
+											{/* Info Row: Salary & Deadline */}
+											<div className="row g-2 small text-muted mb-3 bg-white p-1 rounded">
+												{job.salaryRange && (
+													<div className="col-6">
+														<i className="bi bi-cash-stack me-1 text-success"></i>
+														<span className="fw-medium text-dark">{job.salaryRange}</span>
+													</div>
+												)}
+												{job.deadline && (
+													<div className="col-6 text-end">
+														<i className="bi bi-calendar-event me-1 text-danger"></i>
+														<span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
+													</div>
+												)}
+											</div>
+
+											{/* Card Footer */}
+											<div className="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
+												<small className="text-muted">
+													<i className="bi bi-geo-alt me-1"></i>{job.location}
+													{job.postedBy?.name && (
+														<span className="ms-2 badge bg-secondary-subtle text-secondary border">
+															Recruiter: {job.postedBy.name}
+														</span>
+													)}
+												</small>
+
+												{hasApplied ? (
+													<span className="badge bg-success-subtle text-success border border-success px-3 py-2">
+														<i className="bi bi-check-circle-fill me-1"></i>Applied
+													</span>
+												) : (
+													<button
+														className="btn btn-sm btn-primary px-3 fw-bold"
+														onClick={() => handleOpenApplyModal(job)}
+													>
+														<i className="bi bi-send me-1"></i>1-Click Apply
+													</button>
+												)}
+											</div>
+										</div>
+									</div>
+								)
+							})}
+						</div>
+					) : (
+						<div className="text-center py-5 bg-light rounded-3">
+							<i className="bi bi-search text-muted fs-1 mb-2 d-block"></i>
+							<h5>No internships found</h5>
+							<p className="text-muted small">Try adjusting your filters or search keywords.</p>
+						</div>
+					)}
+				</>
+			)}
+
+			{/* TAB CONTENT 2: PERSONAL APPLICATION TRACKER */}
+			{activeTab === 'tracker' && (
+				<ApplicationTracker
+					applications={myApplications}
+					loading={loadingTracker}
+					onWithdraw={handleWithdrawApplication}
+				/>
 			)}
 
 			{/* Modal for Recruiter / Admin Posting */}
@@ -245,6 +297,14 @@ const InternshipsPage = () => {
 				onClose={() => setIsModalOpen(false)}
 				onPostCreated={handlePostCreated}
 				userToken={user?.token}
+			/>
+
+			{/* Modal for 1-Click Application Submission with Selected CV */}
+			<ApplyModal
+				isOpen={!!applyTargetJob}
+				onClose={() => setApplyTargetJob(null)}
+				internship={applyTargetJob}
+				onApplicationSubmitted={handleApplicationSubmitted}
 			/>
 		</div>
 	)
