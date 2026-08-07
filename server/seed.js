@@ -27,6 +27,7 @@ export const seedDatabase = async () => {
 					salaryRange: '$800 - $1,200 / month',
 					deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
 					description: 'Join Google engineering team to build scalable web applications using modern MERN stack. Work on real-world projects with senior mentors.',
+					eligibilityCriteria: 'Minimum CGPA 3.3, CSE/SE majors, proficiency in JavaScript and Data Structures.',
 					status: 'Open'
 				},
 				{
@@ -38,6 +39,7 @@ export const seedDatabase = async () => {
 					salaryRange: '$1,000 / month',
 					deadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
 					description: 'Collaborate with the Microsoft UI design team to craft fluid, accessible, and high-performance web components.',
+					eligibilityCriteria: 'Current 3rd or 4th year student, strong portfolio of React web projects.',
 					status: 'Open'
 				},
 				{
@@ -49,6 +51,7 @@ export const seedDatabase = async () => {
 					salaryRange: '$900 / month',
 					deadline: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
 					description: 'Design and deploy robust RESTful API microservices with high throughput and low latency database connections.',
+					eligibilityCriteria: 'Good foundation in database management, REST API design, and asynchronous JS.',
 					status: 'Open'
 				},
 				{
@@ -60,6 +63,7 @@ export const seedDatabase = async () => {
 					salaryRange: '$1,500 / month',
 					deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 					description: 'Build predictive career matching models and student skill analytics dashboards.',
+					eligibilityCriteria: 'Prior coursework or projects in Machine Learning, Python, and PyTorch/TensorFlow.',
 					status: 'Open'
 				},
 				{
@@ -71,6 +75,7 @@ export const seedDatabase = async () => {
 					salaryRange: '$850 / month',
 					deadline: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
 					description: 'Auditing authentication protocols, enforcing JWT token security, and safeguarding cloud deployment pipelines.',
+					eligibilityCriteria: 'Basic understanding of OS security, Linux shell scripting, and web authentication.',
 					status: 'Open'
 				}
 			])
