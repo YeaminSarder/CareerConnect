@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import axios from '../api/axios.js'
 import InternshipFilter from '../components/rakibul/InternshipFilter.jsx'
+import InternshipPostModal from '../components/rakibul/InternshipPostModal.jsx'
+import { useAuthContext } from '../hooks/use-auth-context.jsx'
 
 const InternshipsPage = () => {
+	const { user } = useAuthContext()
 	const [internships, setInternships] = useState([])
 	const [loading, setLoading] = useState(true)
+	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [testRecruiterMode, setTestRecruiterMode] = useState(false)
+
+	const isRecruiterOrAdmin = user?.role === 'recruiter' || user?.role === 'admin' || testRecruiterMode
 
 	const fetchInternships = async (filters = {}) => {
 		setLoading(true)
@@ -29,11 +36,42 @@ const InternshipsPage = () => {
 		fetchInternships()
 	}, [])
 
+	const handlePostCreated = (newJob) => {
+		setInternships((prev) => [newJob, ...prev])
+	}
+
 	return (
 		<div className="container py-4">
-			<h3 className="fw-bold mb-4 text-primary">
-				<i className="bi bi-briefcase-fill me-2"></i>Internship Discovery & Matching
-			</h3>
+			<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+				<div>
+					<h3 className="fw-bold text-primary mb-1">
+						<i className="bi bi-briefcase-fill me-2"></i>Internship Discovery & Matching
+					</h3>
+					<p className="text-muted small mb-0">
+						Explore active listings or manage internship postings as a recruiter/admin.
+					</p>
+				</div>
+
+				<div className="d-flex align-items-center gap-2">
+					{/* Toggle Recruiter Posting Permission for Demo */}
+					{!user?.role || (user.role !== 'recruiter' && user.role !== 'admin') ? (
+						<button
+							className={`btn btn-sm ${testRecruiterMode ? 'btn-outline-success' : 'btn-outline-secondary'}`}
+							onClick={() => setTestRecruiterMode(!testRecruiterMode)}
+							title="Toggle posting mode for demonstration"
+						>
+							<i className="bi bi-person-badge me-1"></i>
+							{testRecruiterMode ? 'Recruiter Mode: ON' : 'Enable Recruiter Mode'}
+						</button>
+					) : null}
+
+					{isRecruiterOrAdmin && (
+						<button className="btn btn-primary shadow-sm" onClick={() => setIsModalOpen(true)}>
+							<i className="bi bi-plus-lg me-1"></i>Post New Internship
+						</button>
+					)}
+				</div>
+			</div>
 
 			{/* FR-18: Multi-filter Search Component */}
 			<InternshipFilter onFilterChange={fetchInternships} />
