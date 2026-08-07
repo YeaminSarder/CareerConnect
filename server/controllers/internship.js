@@ -1,7 +1,6 @@
 import Internship from '../models/internship.js'
 
 // GET /api/internships (supports multi-filtering for FR-18)
-// GET /api/internships (supports multi-filtering for FR-18)
 export const searchAndFilterInternships = async (req, res) => {
 	try {
 		const { search, company, location, workMode, skill, status } = req.query
