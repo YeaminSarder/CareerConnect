@@ -1,5 +1,5 @@
 import Form from "react-bootstrap/Form";
-
+import { InputGroup } from "react-bootstrap";
 const AppForm = (props) => {
   return (
     <Form
@@ -45,10 +45,23 @@ const AppFormControl = (props) => {
   );
 }
 
+const AppFormInputGroup = (props) => {
+  return (
+    <InputGroup className="mb-2">
+    <InputGroup.Text>{props['aria-label']}</InputGroup.Text>
+    <Form.Control
+      className={`rounded-md border-gray-300 ${props.className ?? ""}`}
+      {...props}
+    />
+    </InputGroup>
+  );
+}
+
 export default {
   Form: AppForm,
   Group: AppFormGroup,
   Label: AppFormLabel,
   Control: AppFormControl,
   Header: AppFormHeader,
+  InputGroup: AppFormInputGroup
 };

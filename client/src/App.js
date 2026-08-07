@@ -12,8 +12,9 @@ import AnalyticsPage from './pages/analytics'
 import { CvEdit } from './pages/cv-edit'
 import { useAuthContext } from './hooks/use-auth-context'
 import { Navigate } from 'react-router'
+import { Loading } from './components/loading'
 function App() {
-  const { user } = useAuthContext()
+  const { user, isLoading } = useAuthContext()
   return (
     <div className="App">
 	  <BrowserRouter>
@@ -21,39 +22,39 @@ function App() {
 		    <Routes>
           <Route
             path='/'
-            element={user ? <Home /> : <Navigate to="/login" /> }
+            element={isLoading? <Loading/>: user ? <Home /> : <Navigate to="/login" /> }
           />
           <Route
             path='/cv'
-            element={user ? <Cv /> : <Navigate to="/login" /> }
+            element={isLoading ? <Loading/>: user ? <Cv /> : <Navigate to="/login" /> }
           />
           <Route
             path='/profile'
-            element={user ? <Profile /> : <Navigate to="/login" /> }
+            element={isLoading? <Loading/>: user ? <Profile /> : <Navigate to="/login" /> }
           />
           <Route
             path='/internships'
-            element={user ? <InternshipsPage /> : <Navigate to="/login" /> }
+            element={isLoading ? <Loading/> : user ? <InternshipsPage /> : <Navigate to="/login" /> }
           />
           <Route
             path='/connections'
-            element={user ? <ConnectionsPage /> : <Navigate to="/login" /> }
+            element={isLoading ? <Loading/> : user ? <ConnectionsPage /> : <Navigate to="/login" /> }
           />
           <Route
             path='/analytics'
-            element={user ? <AnalyticsPage /> : <Navigate to="/login" /> }
+            element={isLoading ? <Loading/> : user ? <AnalyticsPage /> : <Navigate to="/login" /> }
           />
           <Route
             path='/register'
-            element={!user ? <Register /> : <Navigate to="/profile" /> }
+            element={isLoading? <Loading/>: !user ? <Register /> : <Navigate to="/profile" /> }
           />
           <Route
             path='/login'
-            element={!user ? <Login /> : <Navigate to="/profile" /> }
+            element={isLoading? <Loading/>: !user ? <Login /> : <Navigate to="/profile" /> }
           />
           <Route
             path='/cv/edit/:cvId'
-            element={user ? <CvEdit/> : <Navigate to="/login" /> }
+            element={isLoading? <Loading/>: user ? <CvEdit/> : <Navigate to="/login" /> }
           />
         </Routes>
 	  </BrowserRouter>

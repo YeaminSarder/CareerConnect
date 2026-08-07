@@ -22,7 +22,7 @@ export const getAllCvs = async (req, res) => {
         const cvs = await Cv.find();
         res.json(cvs);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -31,7 +31,7 @@ export const getCvById = async (req, res) => {
     try {
         res.json(req.cv);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -41,20 +41,21 @@ export const createCv = async function createCv(req, res) {
         const cv = await Cv.user_create(req.user._id, req.body.title)
         res.status(201).json(cv);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
 // Update a CV
 export const updateCv = async (req, res) => {
     try {
+        console.log("updateCv", req.cv, req.body)
         const cv = await req.cv.updateOne(req.body, { new: true, runValidators: true });
         if (!cv) {
-            return res.status(404).json({ message: 'CV not found' });
+            return res.status(404).json({ error: 'CV not found' });
         }
         res.json(cv);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -64,7 +65,7 @@ export const deleteCv = async (req, res) => {
         await req.cv.deleteOne();
         res.json({ message: 'CV deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 
