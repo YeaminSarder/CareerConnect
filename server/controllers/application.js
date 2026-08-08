@@ -123,10 +123,32 @@ export const withdrawApplication = async (req, res) => {
 	}
 }
 
+// GET /api/applications/internship/:internshipId - View applicants for a specific internship post (recruiter/admin)
+export const getApplicantsByInternship = async (req, res) => {
+	try {
+		const { internshipId } = req.params
+
+		if (!mongoose.Types.ObjectId.isValid(internshipId)) {
+			return res.status(400).json({ error: 'Invalid Internship ID' })
+		}
+
+		const applications = await Application.find({ internship: internshipId })
+			.populate('student', 'name email profile role')
+			.populate('cv')
+			.populate('internship')
+			.sort({ createdAt: -1 })
+
+		res.status(200).json(applications)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
 export default {
 	applyForInternship,
 	getMyApplications,
 	updateApplicationStatus,
-	withdrawApplication
+	withdrawApplication,
+	getApplicantsByInternship
 }
 
