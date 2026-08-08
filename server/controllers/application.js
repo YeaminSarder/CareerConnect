@@ -80,7 +80,7 @@ export const updateApplicationStatus = async (req, res) => {
 		const { id } = req.params
 		const { status } = req.body
 
-		const validStatuses = ['Applied', 'Under Review', 'Interviewing', 'Accepted', 'Rejected']
+		const validStatuses = ['Applied', 'Under Review', 'Shortlisted', 'Interviewing', 'Accepted', 'Rejected']
 		if (!validStatuses.includes(status)) {
 			return res.status(400).json({ error: 'Invalid application status' })
 		}
