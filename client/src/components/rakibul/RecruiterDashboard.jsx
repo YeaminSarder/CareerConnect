@@ -32,6 +32,22 @@ const RecruiterDashboard = ({ internships = [] }) => {
 		fetchApplications()
 	}, [])
 
+	// Filter applications based on selected internship and status tab
+	const filteredApplications = applications.filter((app) => {
+		const matchesJob = selectedInternshipId === 'ALL' || app.internship?._id === selectedInternshipId || app.internship === selectedInternshipId
+		const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter
+		return matchesJob && matchesStatus
+	})
+
+	// Summary stats calculation
+	const totalApps = applications.length
+	const countApplied = applications.filter(a => a.status === 'Applied').length
+	const countReview = applications.filter(a => a.status === 'Under Review').length
+	const countShortlisted = applications.filter(a => a.status === 'Shortlisted').length
+	const countInterview = applications.filter(a => a.status === 'Interviewing').length
+	const countAccepted = applications.filter(a => a.status === 'Accepted').length
+	const countRejected = applications.filter(a => a.status === 'Rejected').length
+
 	return (
 		<div className="card shadow-sm border-0 rounded-4 p-4 bg-light">
 			{/* Dashboard Header */}
@@ -65,6 +81,60 @@ const RecruiterDashboard = ({ internships = [] }) => {
 					</select>
 				</div>
 			</div>
+
+			{/* Metrics Summary Cards */}
+			<div className="row g-2 mb-4">
+				<div className="col-6 col-md-2">
+					<div className="card border-0 bg-white shadow-sm p-3 text-center rounded-3">
+						<span className="text-muted small fw-bold">Total Applicants</span>
+						<h4 className="fw-bold text-primary mb-0">{totalApps}</h4>
+					</div>
+				</div>
+				<div className="col-6 col-md-2">
+					<div className="card border-0 bg-white shadow-sm p-3 text-center rounded-3">
+						<span className="text-warning small fw-bold">Under Review</span>
+						<h4 className="fw-bold text-warning mb-0">{countReview}</h4>
+					</div>
+				</div>
+				<div className="col-6 col-md-2">
+					<div className="card border-0 bg-white shadow-sm p-3 text-center rounded-3">
+						<span className="text-info small fw-bold">Shortlisted</span>
+						<h4 className="fw-bold text-info mb-0">{countShortlisted}</h4>
+					</div>
+				</div>
+				<div className="col-6 col-md-2">
+					<div className="card border-0 bg-white shadow-sm p-3 text-center rounded-3">
+						<span className="text-secondary small fw-bold">Interviewing</span>
+						<h4 className="fw-bold text-secondary mb-0">{countInterview}</h4>
+					</div>
+				</div>
+				<div className="col-6 col-md-2">
+					<div className="card border-0 bg-white shadow-sm p-3 text-center rounded-3">
+						<span className="text-success small fw-bold">Accepted</span>
+						<h4 className="fw-bold text-success mb-0">{countAccepted}</h4>
+					</div>
+				</div>
+				<div className="col-6 col-md-2">
+					<div className="card border-0 bg-white shadow-sm p-3 text-center rounded-3">
+						<span className="text-danger small fw-bold">Rejected</span>
+						<h4 className="fw-bold text-danger mb-0">{countRejected}</h4>
+					</div>
+				</div>
+			</div>
+
+			{/* Status Filter Tabs */}
+			<ul className="nav nav-tabs border-bottom-0 mb-3">
+				{['ALL', 'Applied', 'Under Review', 'Shortlisted', 'Interviewing', 'Accepted', 'Rejected'].map((status) => (
+					<li key={status} className="nav-item">
+						<button
+							className={`nav-link border-0 fw-semibold ${statusFilter === status ? 'active bg-white border-bottom border-3 border-primary text-primary' : 'text-secondary'}`}
+							onClick={() => setStatusFilter(status)}
+						>
+							{status === 'ALL' ? 'All Applicants' : status}
+						</button>
+					</li>
+				))}
+			</ul>
 		</div>
 	)
 }
