@@ -48,6 +48,37 @@ const RecruiterDashboard = ({ internships = [] }) => {
 	const countAccepted = applications.filter(a => a.status === 'Accepted').length
 	const countRejected = applications.filter(a => a.status === 'Rejected').length
 
+	const handleStatusChange = async (appId, newStatus) => {
+		try {
+			const res = await updateApplicationStatus(appId, newStatus)
+			setApplications((prev) =>
+				prev.map((app) => (app._id === appId ? res.data : app))
+			)
+		} catch (err) {
+			console.error('Error updating application status:', err)
+			alert(err.response?.data?.error || 'Failed to update application status.')
+		}
+	}
+
+	const getStatusBadge = (status) => {
+		switch (status) {
+			case 'Applied':
+				return <span className="badge bg-primary"><i className="bi bi-clock-history me-1"></i>Applied</span>
+			case 'Under Review':
+				return <span className="badge bg-warning text-dark"><i className="bi bi-eye-fill me-1"></i>Under Review</span>
+			case 'Shortlisted':
+				return <span className="badge bg-info text-dark"><i className="bi bi-star-fill me-1"></i>Shortlisted</span>
+			case 'Interviewing':
+				return <span className="badge bg-purple text-white bg-dark"><i className="bi bi-person-video me-1"></i>Interviewing</span>
+			case 'Accepted':
+				return <span className="badge bg-success"><i className="bi bi-check-circle-fill me-1"></i>Accepted</span>
+			case 'Rejected':
+				return <span className="badge bg-danger"><i className="bi bi-x-circle-fill me-1"></i>Rejected</span>
+			default:
+				return <span className="badge bg-secondary">{status}</span>
+		}
+	}
+
 	return (
 		<div className="card shadow-sm border-0 rounded-4 p-4 bg-light">
 			{/* Dashboard Header */}
@@ -135,6 +166,121 @@ const RecruiterDashboard = ({ internships = [] }) => {
 					</li>
 				))}
 			</ul>
+
+			{/* Applicants Table */}
+			{loading ? (
+				<div className="text-center py-5 bg-white rounded-3 border">
+					<div className="spinner-border text-primary" role="status">
+						<span className="visually-hidden">Loading candidate applications...</span>
+					</div>
+					<p className="text-muted small mt-2">Fetching applicants...</p>
+				</div>
+			) : filteredApplications.length === 0 ? (
+				<div className="text-center py-5 bg-white rounded-3 border">
+					<i className="bi bi-people text-muted fs-1 mb-2 d-block"></i>
+					<h6 className="fw-bold text-secondary mb-1">No applications found</h6>
+					<p className="text-muted small mb-0">No candidate submissions match your selected filter criteria.</p>
+				</div>
+			) : (
+				<div className="table-responsive bg-white rounded-3 border">
+					<table className="table table-hover align-middle mb-0">
+						<thead className="table-light">
+							<tr>
+								<th scope="col" className="py-3 ps-3">Candidate Info</th>
+								<th scope="col" className="py-3">Applied Position</th>
+								<th scope="col" className="py-3">Submitted CV</th>
+								<th scope="col" className="py-3">Applied Date</th>
+								<th scope="col" className="py-3">Status</th>
+								<th scope="col" className="py-3 text-end pe-3">Review & Quick Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{filteredApplications.map((app) => {
+								const student = app.student || {}
+								const cv = app.cv || {}
+								const job = app.internship || {}
+
+								return (
+									<tr key={app._id}>
+										<td className="ps-3 py-3">
+											<div className="fw-bold text-dark">{student.name || 'Candidate'}</div>
+											<div className="text-muted small">
+												<i className="bi bi-envelope me-1"></i>{student.email || 'N/A'}
+											</div>
+										</td>
+										<td className="py-3">
+											<div className="fw-semibold text-primary">{job.title || 'Internship'}</div>
+											<small className="text-muted">{job.company || 'Company'}</small>
+										</td>
+										<td className="py-3">
+											<button
+												className="btn btn-sm btn-outline-primary shadow-sm"
+												onClick={() =>
+													setInspectCvModal({
+														isOpen: true,
+														cvId: cv._id || cv,
+														candidateName: student.name,
+														applicationDate: app.appliedAt || app.createdAt
+													})
+												}
+											>
+												<i className="bi bi-file-earmark-person-fill me-1"></i>
+												{cv.title || 'View CV'}
+											</button>
+										</td>
+										<td className="py-3 small text-muted">
+											{new Date(app.appliedAt || app.createdAt).toLocaleDateString(undefined, {
+												year: 'numeric',
+												month: 'short',
+												day: 'numeric'
+											})}
+										</td>
+										<td className="py-3">
+											{getStatusBadge(app.status)}
+										</td>
+										<td className="py-3 text-end pe-3">
+											<div className="d-flex justify-content-end align-items-center gap-2">
+												{/* Quick Shortlist Button */}
+												<button
+													className={`btn btn-sm ${app.status === 'Shortlisted' ? 'btn-info text-dark font-weight-bold disabled' : 'btn-outline-info'}`}
+													onClick={() => handleStatusChange(app._id, 'Shortlisted')}
+													title="Shortlist Candidate"
+												>
+													<i className="bi bi-star-fill me-1"></i>Shortlist
+												</button>
+
+												{/* Quick Reject Button */}
+												<button
+													className={`btn btn-sm ${app.status === 'Rejected' ? 'btn-danger disabled' : 'btn-outline-danger'}`}
+													onClick={() => handleStatusChange(app._id, 'Rejected')}
+													title="Reject Candidate"
+												>
+													<i className="bi bi-x-lg me-1"></i>Reject
+												</button>
+
+												{/* Select Status Dropdown */}
+												<select
+													className="form-select form-select-sm"
+													style={{ width: '135px' }}
+													value={app.status}
+													onChange={(e) => handleStatusChange(app._id, e.target.value)}
+												>
+													<option value="Applied">Applied</option>
+													<option value="Under Review">Under Review</option>
+													<option value="Shortlisted">Shortlisted</option>
+													<option value="Interviewing">Interviewing</option>
+													<option value="Accepted">Accepted</option>
+													<option value="Rejected">Rejected</option>
+												</select>
+											</div>
+										</td>
+									</tr>
+								)
+							})}
+						</tbody>
+					</table>
+				</div>
+			)}
 		</div>
 	)
 }
