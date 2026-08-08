@@ -168,12 +168,38 @@ export const getRecruiterApplications = async (req, res) => {
 	}
 }
 
+// GET /api/applications/cv-detail/:cvId - View details of candidate submitted CV (recruiter/admin)
+export const getSubmittedCvDetail = async (req, res) => {
+	try {
+		const { cvId } = req.params
+
+		if (!mongoose.Types.ObjectId.isValid(cvId)) {
+			return res.status(400).json({ error: 'Invalid CV ID' })
+		}
+
+		const cv = await Cv.findById(cvId).populate({
+			path: 'user',
+			select: 'name email profile role',
+			populate: { path: 'profile' }
+		})
+
+		if (!cv) {
+			return res.status(404).json({ error: 'Submitted CV not found' })
+		}
+
+		res.status(200).json(cv)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
 export default {
 	applyForInternship,
 	getMyApplications,
 	updateApplicationStatus,
 	withdrawApplication,
 	getApplicantsByInternship,
-	getRecruiterApplications
+	getRecruiterApplications,
+	getSubmittedCvDetail
 }
 
