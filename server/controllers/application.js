@@ -144,11 +144,36 @@ export const getApplicantsByInternship = async (req, res) => {
 	}
 }
 
+// GET /api/applications/recruiter - View all candidate applications for recruiter posts
+export const getRecruiterApplications = async (req, res) => {
+	try {
+		let internshipFilter = {}
+		if (req.user && req.user.role === 'recruiter') {
+			const myInternships = await Internship.find({ postedBy: req.user._id }).select('_id')
+			const ids = myInternships.map((i) => i._id)
+			if (ids.length > 0) {
+				internshipFilter = { internship: { $in: ids } }
+			}
+		}
+
+		const applications = await Application.find(internshipFilter)
+			.populate('student', 'name email profile role')
+			.populate('cv')
+			.populate('internship')
+			.sort({ createdAt: -1 })
+
+		res.status(200).json(applications)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
 export default {
 	applyForInternship,
 	getMyApplications,
 	updateApplicationStatus,
 	withdrawApplication,
-	getApplicantsByInternship
+	getApplicantsByInternship,
+	getRecruiterApplications
 }
 
