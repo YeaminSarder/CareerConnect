@@ -6,17 +6,23 @@ const SubmittedCvModal = ({ isOpen, onClose, cvId, candidateName, applicationDat
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 
+	const effectiveCvId = typeof cvId === 'object' && cvId !== null ? cvId._id : cvId
+
 	useEffect(() => {
-		if (isOpen && cvId) {
+		if (isOpen && effectiveCvId) {
 			fetchCvDetail()
 		}
-	}, [isOpen, cvId])
+	}, [isOpen, effectiveCvId])
 
 	const fetchCvDetail = async () => {
+		if (!effectiveCvId) {
+			setError('No valid CV ID associated with this application.')
+			return
+		}
 		setLoading(true)
 		setError(null)
 		try {
-			const res = await getSubmittedCvDetail(cvId)
+			const res = await getSubmittedCvDetail(effectiveCvId)
 			setCvDetail(res.data)
 		} catch (err) {
 			console.error('Error fetching CV details:', err)

@@ -151,9 +151,7 @@ export const getRecruiterApplications = async (req, res) => {
 		if (req.user && req.user.role === 'recruiter') {
 			const myInternships = await Internship.find({ postedBy: req.user._id }).select('_id')
 			const ids = myInternships.map((i) => i._id)
-			if (ids.length > 0) {
-				internshipFilter = { internship: { $in: ids } }
-			}
+			internshipFilter = { internship: { $in: ids } }
 		}
 
 		const applications = await Application.find(internshipFilter)
