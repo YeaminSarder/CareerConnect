@@ -4,6 +4,7 @@ import InternshipFilter from '../components/rakibul/InternshipFilter.jsx'
 import InternshipPostModal from '../components/rakibul/InternshipPostModal.jsx'
 import ApplyModal from '../components/rakibul/ApplyModal.jsx'
 import ApplicationTracker from '../components/rakibul/ApplicationTracker.jsx'
+import RecruiterDashboard from '../components/rakibul/RecruiterDashboard.jsx'
 import { getMyApplications, withdrawApplication } from '../api/application.js'
 import { useAuthContext } from '../hooks/use-auth-context.jsx'
 
@@ -15,7 +16,7 @@ const InternshipsPage = () => {
 	const [testRecruiterMode, setTestRecruiterMode] = useState(false)
 
 	// Tab and Application Tracker state
-	const [activeTab, setActiveTab] = useState('discover') // 'discover' | 'tracker'
+	const [activeTab, setActiveTab] = useState('discover') // 'discover' | 'tracker' | 'recruiter'
 	const [myApplications, setMyApplications] = useState([])
 	const [loadingTracker, setLoadingTracker] = useState(false)
 	const [applyTargetJob, setApplyTargetJob] = useState(null)
@@ -109,10 +110,10 @@ const InternshipsPage = () => {
 			<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 				<div>
 					<h3 className="fw-bold text-primary mb-1">
-						<i className="bi bi-briefcase-fill me-2"></i>Internship Discovery & Application Tracker
+						<i className="bi bi-briefcase-fill me-2"></i>Internship Discovery & Recruiter Portal
 					</h3>
 					<p className="text-muted small mb-0">
-						Explore listings, submit 1-click applications with selected CV versions, and track your progress.
+						Explore listings, submit 1-click applications with selected CV versions, and manage candidate reviews.
 					</p>
 				</div>
 
@@ -122,7 +123,7 @@ const InternshipsPage = () => {
 						<button
 							className={`btn btn-sm ${testRecruiterMode ? 'btn-outline-success' : 'btn-outline-secondary'}`}
 							onClick={() => setTestRecruiterMode(!testRecruiterMode)}
-							title="Toggle posting mode for demonstration"
+							title="Toggle posting and recruiter review mode for demonstration"
 						>
 							<i className="bi bi-person-badge me-1"></i>
 							{testRecruiterMode ? 'Recruiter Mode: ON' : 'Enable Recruiter Mode'}
@@ -137,7 +138,7 @@ const InternshipsPage = () => {
 				</div>
 			</div>
 
-			{/* Navigation Tabs: Discover Listings vs Application Tracker */}
+			{/* Navigation Tabs: Discover Listings vs Application Tracker vs Recruiter Dashboard */}
 			<ul className="nav nav-pills mb-4 bg-light p-2 rounded-3 border">
 				<li className="nav-item">
 					<button
@@ -158,6 +159,16 @@ const InternshipsPage = () => {
 						)}
 					</button>
 				</li>
+				{isRecruiterOrAdmin && (
+					<li className="nav-item">
+						<button
+							className={`nav-link fw-semibold ${activeTab === 'recruiter' ? 'active shadow-sm' : 'text-secondary'}`}
+							onClick={() => setActiveTab('recruiter')}
+						>
+							<i className="bi bi-person-workspace me-2"></i>Recruiter Review Dashboard
+						</button>
+					</li>
+				)}
 			</ul>
 
 			{/* TAB CONTENT 1: DISCOVER LISTINGS */}
@@ -289,6 +300,11 @@ const InternshipsPage = () => {
 					loading={loadingTracker}
 					onWithdraw={handleWithdrawApplication}
 				/>
+			)}
+
+			{/* TAB CONTENT 3: RECRUITER APPLICATION REVIEW DASHBOARD */}
+			{activeTab === 'recruiter' && (
+				<RecruiterDashboard internships={internships} />
 			)}
 
 			{/* Modal for Recruiter / Admin Posting */}

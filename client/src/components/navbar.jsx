@@ -35,7 +35,7 @@ const Navbar = () =>  {
                     </Nav.Item>
                     <Nav.Item>
                       <Link to="/internships" className="nav-link">
-                        Internships
+                        {user?.role === 'recruiter' || user?.role === 'admin' ? 'Internships & Applicants' : 'Internships'}
                       </Link>
                     </Nav.Item>
                     <Nav.Item>

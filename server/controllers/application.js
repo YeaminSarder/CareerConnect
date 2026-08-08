@@ -80,7 +80,7 @@ export const updateApplicationStatus = async (req, res) => {
 		const { id } = req.params
 		const { status } = req.body
 
-		const validStatuses = ['Applied', 'Under Review', 'Interviewing', 'Accepted', 'Rejected']
+		const validStatuses = ['Applied', 'Under Review', 'Shortlisted', 'Interviewing', 'Accepted', 'Rejected']
 		if (!validStatuses.includes(status)) {
 			return res.status(400).json({ error: 'Invalid application status' })
 		}
@@ -123,10 +123,81 @@ export const withdrawApplication = async (req, res) => {
 	}
 }
 
+// GET /api/applications/internship/:internshipId - View applicants for a specific internship post (recruiter/admin)
+export const getApplicantsByInternship = async (req, res) => {
+	try {
+		const { internshipId } = req.params
+
+		if (!mongoose.Types.ObjectId.isValid(internshipId)) {
+			return res.status(400).json({ error: 'Invalid Internship ID' })
+		}
+
+		const applications = await Application.find({ internship: internshipId })
+			.populate('student', 'name email profile role')
+			.populate('cv')
+			.populate('internship')
+			.sort({ createdAt: -1 })
+
+		res.status(200).json(applications)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+// GET /api/applications/recruiter - View all candidate applications for recruiter posts
+export const getRecruiterApplications = async (req, res) => {
+	try {
+		let internshipFilter = {}
+		if (req.user && req.user.role === 'recruiter') {
+			const myInternships = await Internship.find({ postedBy: req.user._id }).select('_id')
+			const ids = myInternships.map((i) => i._id)
+			internshipFilter = { internship: { $in: ids } }
+		}
+
+		const applications = await Application.find(internshipFilter)
+			.populate('student', 'name email profile role')
+			.populate('cv')
+			.populate('internship')
+			.sort({ createdAt: -1 })
+
+		res.status(200).json(applications)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+// GET /api/applications/cv-detail/:cvId - View details of candidate submitted CV (recruiter/admin)
+export const getSubmittedCvDetail = async (req, res) => {
+	try {
+		const { cvId } = req.params
+
+		if (!mongoose.Types.ObjectId.isValid(cvId)) {
+			return res.status(400).json({ error: 'Invalid CV ID' })
+		}
+
+		const cv = await Cv.findById(cvId).populate({
+			path: 'user',
+			select: 'name email profile role',
+			populate: { path: 'profile' }
+		})
+
+		if (!cv) {
+			return res.status(404).json({ error: 'Submitted CV not found' })
+		}
+
+		res.status(200).json(cv)
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
 export default {
 	applyForInternship,
 	getMyApplications,
 	updateApplicationStatus,
-	withdrawApplication
+	withdrawApplication,
+	getApplicantsByInternship,
+	getRecruiterApplications,
+	getSubmittedCvDetail
 }
 
