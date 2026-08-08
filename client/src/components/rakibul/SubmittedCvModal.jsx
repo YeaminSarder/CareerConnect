@@ -10,6 +10,7 @@ const SubmittedCvModal = ({ isOpen, onClose, cvId, candidateName, applicationDat
 
 	useEffect(() => {
 		if (isOpen && effectiveCvId) {
+			setCvDetail(null)
 			fetchCvDetail()
 		}
 	}, [isOpen, effectiveCvId])
@@ -35,7 +36,7 @@ const SubmittedCvModal = ({ isOpen, onClose, cvId, candidateName, applicationDat
 	if (!isOpen) return null
 
 	const studentUser = cvDetail?.user
-	const profile = studentUser?.profile
+	const profile = typeof studentUser?.profile === 'object' ? studentUser.profile : null
 
 	return (
 		<div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1" role="dialog">
@@ -91,7 +92,7 @@ const SubmittedCvModal = ({ isOpen, onClose, cvId, candidateName, applicationDat
 									<div className="card border-0 bg-white p-3 shadow-sm rounded-3">
 										<h6 className="fw-bold text-dark mb-2">
 											<i className="bi bi-person-badge-fill me-2 text-primary"></i>
-											Profile Summary
+											Candidate Profile & Qualifications
 										</h6>
 
 										{profile.department && (
@@ -117,6 +118,34 @@ const SubmittedCvModal = ({ isOpen, onClose, cvId, candidateName, applicationDat
 														</span>
 													))}
 												</div>
+											</div>
+										)}
+
+										{/* Education */}
+										{profile.education && profile.education.length > 0 && (
+											<div className="mt-2 border-top pt-2">
+												<strong className="small text-secondary d-block mb-1">
+													<i className="bi bi-mortarboard-fill me-1 text-primary"></i>Education:
+												</strong>
+												{profile.education.map((edu, i) => (
+													<div key={i} className="small text-muted mb-1">
+														• <strong>{edu.institution || 'University'}</strong> - {edu.degree || 'Degree'} ({edu.startYear} - {edu.endYear || 'Present'})
+													</div>
+												))}
+											</div>
+										)}
+
+										{/* Experience */}
+										{profile.experience && profile.experience.length > 0 && (
+											<div className="mt-2 border-top pt-2">
+												<strong className="small text-secondary d-block mb-1">
+													<i className="bi bi-briefcase-fill me-1 text-success"></i>Experience:
+												</strong>
+												{profile.experience.map((exp, i) => (
+													<div key={i} className="small text-muted mb-1">
+														• <strong>{exp.title}</strong> at {exp.company} ({exp.startDate} - {exp.endDate || 'Present'})
+													</div>
+												))}
 											</div>
 										)}
 									</div>

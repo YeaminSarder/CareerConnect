@@ -69,7 +69,7 @@ const RecruiterDashboard = ({ internships = [] }) => {
 			case 'Shortlisted':
 				return <span className="badge bg-info text-dark"><i className="bi bi-star-fill me-1"></i>Shortlisted</span>
 			case 'Interviewing':
-				return <span className="badge bg-purple text-white bg-dark"><i className="bi bi-person-video me-1"></i>Interviewing</span>
+				return <span className="badge bg-dark text-white"><i className="bi bi-person-video me-1"></i>Interviewing</span>
 			case 'Accepted':
 				return <span className="badge bg-success"><i className="bi bi-check-circle-fill me-1"></i>Accepted</span>
 			case 'Rejected':
