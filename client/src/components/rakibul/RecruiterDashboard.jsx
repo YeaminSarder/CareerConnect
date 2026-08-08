@@ -281,6 +281,15 @@ const RecruiterDashboard = ({ internships = [] }) => {
 					</table>
 				</div>
 			)}
+
+			{/* Submitted CV Detail Inspection Modal */}
+			<SubmittedCvModal
+				isOpen={inspectCvModal.isOpen}
+				onClose={() => setInspectCvModal({ ...inspectCvModal, isOpen: false })}
+				cvId={inspectCvModal.cvId}
+				candidateName={inspectCvModal.candidateName}
+				applicationDate={inspectCvModal.applicationDate}
+			/>
 		</div>
 	)
 }
