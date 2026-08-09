@@ -12,6 +12,7 @@ const columns = [
 export default function ApplicationBoard({
     applications,
     onStatusChange,
+    handleWithdrawApplication,
 }) {
     return (
         <div className="d-flex gap-3 overflow-auto pb-3">
@@ -24,6 +25,7 @@ export default function ApplicationBoard({
                             application.status === status
                     )}
                     onStatusChange={onStatusChange}
+                    handleWithdrawApplication={handleWithdrawApplication}
                 />
             ))}
         </div>

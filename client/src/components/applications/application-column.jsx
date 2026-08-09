@@ -5,6 +5,7 @@ export default function ApplicationColumn({
     status,
     applications,
     onStatusChange,
+    handleWithdrawApplication,
 }) {
     return (
         <div
@@ -28,6 +29,7 @@ export default function ApplicationColumn({
                         key={application._id}
                         application={application}
                         onStatusChange={onStatusChange}
+                        handleWithdrawApplication={handleWithdrawApplication}
                     />
                 ))}
             </Stack>

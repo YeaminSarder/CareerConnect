@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 export default function ApplicationCard({
     application,
     onStatusChange,
+    handleWithdrawApplication,
 }) {
     const { internship } = application;
 
@@ -28,11 +29,17 @@ export default function ApplicationCard({
                 <Button
                     size="sm"
                     variant="outline-secondary"
-                    onClick={() =>
-                        onStatusChange(application)
-                    }
+                    onClick={() => alert("not implemented yet")}
                 >
                     View
+                </Button>
+                <Button
+                    size="sm"
+                    variant="outline-danger"
+                    className="ms-2"
+                    onClick={() => handleWithdrawApplication(application._id)}
+                >
+                    Withdraw
                 </Button>
             </Card.Body>
         </Card>

@@ -285,7 +285,7 @@ const InternshipsPage = () => {
 				<ApplicationBoard
 					applications={myApplications}
 					loading={loadingTracker}
-					onWithdraw={handleWithdrawApplication}
+					handleWithdrawApplication={handleWithdrawApplication}
 				/>
 			)}
 
