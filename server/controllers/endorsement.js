@@ -1,5 +1,6 @@
 import Endorsement from '../models/endorsement.js'
 import User from '../models/user.js'
+import Connection from '../models/connection.js'
 
 // POST /api/endorsements
 export const endorseSkill = async (req, res) => {
@@ -15,7 +16,20 @@ export const endorseSkill = async (req, res) => {
 			return res.status(400).json({ error: 'You cannot endorse yourself' })
 		}
 
-		
+		// FR: only connected users can endorse each other
+		const isConnected = await Connection.findOne({
+			status: 'Accepted',
+			$or: [
+				{ requester: fromUser, recipient: toUser },
+				{ requester: toUser, recipient: fromUser }
+			]
+		})
+
+		if (!isConnected) {
+			return res.status(403).json({ error: 'You can only endorse skills of your connections' })
+		}
+
+		// make sure that skill is actually on the target user's profile
 		const targetUser = await User.findById(toUser).populate('profile')
 		const theirSkills = targetUser && targetUser.profile ? targetUser.profile.skills || [] : []
 
@@ -33,7 +47,7 @@ export const endorseSkill = async (req, res) => {
 	}
 }
 
-
+// GET /api/endorsements/:userId
 export const getEndorsementsForUser = async (req, res) => {
 	try {
 		const endorsements = await Endorsement.find({ toUser: req.params.userId }).populate(
@@ -41,7 +55,7 @@ export const getEndorsementsForUser = async (req, res) => {
 			'name'
 		)
 
-		// group by skill so the frontend can show React - 3 endorsements
+		// group by skill so the frontend can show "React - 3 endorsements"
 		const grouped = {}
 		endorsements.forEach((e) => {
 			if (!grouped[e.skill]) {
@@ -57,7 +71,7 @@ export const getEndorsementsForUser = async (req, res) => {
 	}
 }
 
-
+// DELETE /api/endorsements/:id
 export const removeEndorsement = async (req, res) => {
 	try {
 		const endorsement = await Endorsement.findById(req.params.id)
