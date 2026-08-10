@@ -2,18 +2,19 @@ import Post from '../models/post.js'
 
 // POST /api/posts
 export const createPost = async (req, res) => {
-	try {
-		const { title, content } = req.body
-		if (!content) {
-			return res.status(400).json({ error: 'Content is required' })
-		}
+		try {
+			const { title, content, postType } = req.body
+			if (!content) {
+				return res.status(400).json({ error: 'Content is required' })
+			}
 
-		const post = await Post.create({
-			author: req.user._id,
-			authorName: req.user.name || 'Anonymous',
-			title: title || '',
-			content
-		})
+			const post = await Post.create({
+				author: req.user._id,
+				authorName: req.user.name || 'Anonymous',
+				title: title || '',
+				content,
+				postType: postType || 'General Update'
+			})
 
 		res.status(201).json(post)
 	} catch (err) {
