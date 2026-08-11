@@ -125,10 +125,63 @@ export const toggleSave = async (req, res) => {
 	}
 }
 
+
+// PATCH /api/posts/:id
+export const updatePost = async (req, res) => {
+	try {
+		const { id } = req.params
+		const { title, content, postType } = req.body
+
+		const post = await Post.findById(id)
+		if (!post) {
+			return res.status(404).json({ error: 'Post not found' })
+		}
+
+		if (post.author.toString() !== req.user._id.toString()) {
+			return res.status(403).json({ error: 'Not allowed to edit this post' })
+		}
+
+		if (title !== undefined) post.title = title
+		if (content !== undefined) post.content = content
+		if (postType !== undefined) post.postType = postType
+
+		await post.save()
+		res.status(200).json({
+			...post.toObject(),
+			engagement: post.getEngagementCounts()
+		})
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
+// DELETE /api/posts/:id
+export const deletePost = async (req, res) => {
+	try {
+		const { id } = req.params
+
+		const post = await Post.findById(id)
+		if (!post) {
+			return res.status(404).json({ error: 'Post not found' })
+		}
+
+		if (post.author.toString() !== req.user._id.toString()) {
+			return res.status(403).json({ error: 'Not allowed to delete this post' })
+		}
+
+		await post.deleteOne()
+		res.status(200).json({ message: 'Post deleted' })
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+}
+
 export default {
 	createPost,
 	getPosts,
 	toggleLike,
 	addComment,
-	toggleSave
+	toggleSave,
+	updatePost,
+	deletePost
 }
