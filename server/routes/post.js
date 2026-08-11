@@ -4,7 +4,9 @@ import {
 	getPosts,
 	toggleLike,
 	addComment,
-	toggleSave
+	toggleSave,
+	updatePost,
+	deletePost
 } from '../controllers/post.js'
 import requireAuth from '../middleware/require-auth.js'
 
@@ -17,6 +19,8 @@ router.post('/', createPost)
 router.patch('/:id/like', toggleLike)
 router.post('/:id/comment', addComment)
 router.patch('/:id/save', toggleSave)
+router.patch('/:id', updatePost)
+router.delete('/:id', deletePost)
 
 // PATCH /api/posts/:id
 export const updatePost = async (req, res) => {
