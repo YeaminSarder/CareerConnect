@@ -9,6 +9,8 @@ import Login from './pages/login'
 import InternshipsPage from './pages/internships'
 import ConnectionsPage from './pages/connections'
 import AnalyticsPage from './pages/analytics'
+import InterviewsPage from './pages/interviews'
+import EndorsementsPage from './pages/endorsements'
 import { CvEdit } from './pages/cv-edit'
 import { useAuthContext } from './hooks/use-auth-context'
 import { Navigate } from 'react-router'
@@ -19,7 +21,7 @@ function App() {
     <div className="App">
 	  <BrowserRouter>
         <Navbar/>
-		    <Routes>
+	    <Routes>
           <Route
             path='/'
             element={isLoading? <Loading/>: user ? <Home /> : <Navigate to="/login" /> }
@@ -43,6 +45,14 @@ function App() {
           <Route
             path='/analytics'
             element={isLoading ? <Loading/> : user ? <AnalyticsPage /> : <Navigate to="/login" /> }
+          />
+          <Route
+            path='/interviews-schedule'
+            element={isLoading ? <Loading/> : user ? <InterviewsPage /> : <Navigate to="/login" /> }
+          />
+          <Route
+            path='/endorsements'
+            element={isLoading ? <Loading/> : user ? <EndorsementsPage /> : <Navigate to="/login" /> }
           />
           <Route
             path='/register'
