@@ -1,5 +1,7 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import {useModal} from "../../hooks/use-modal"
+import ApplicationViewer from "./application-viewer.jsx";
 
 export default function ApplicationCard({
     application,
@@ -7,7 +9,7 @@ export default function ApplicationCard({
     handleWithdrawApplication,
 }) {
     const { internship } = application;
-
+    const { show, onHide, openModal, closeModal } = useModal();
     return (
         <Card className="shadow-sm">
             <Card.Body>
@@ -29,7 +31,9 @@ export default function ApplicationCard({
                 <Button
                     size="sm"
                     variant="outline-secondary"
-                    onClick={() => alert("not implemented yet")}
+                    onClick={() => {
+                        openModal()
+                    }}
                 >
                     View
                 </Button>
@@ -41,6 +45,11 @@ export default function ApplicationCard({
                 >
                     Withdraw
                 </Button>
+                <ApplicationViewer
+                    application={application}
+                    show={show}
+                    onHide={onHide}
+                />
             </Card.Body>
         </Card>
     );
