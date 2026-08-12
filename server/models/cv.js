@@ -13,7 +13,8 @@ const cvSchema = new Schema(
             required: true,
             ref: "user"
         }
-    }
+    },
+	{ timestamps: true }
 );
 
 cvSchema.statics.user_create = async function (user_id, title) {
