@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import axios from '../../api/axios.js'
-import { useAuthContext } from '../../hooks/use-auth-context.jsx'
+import axios from '../api/axios.js'
+import { useAuthContext } from '../hooks/use-auth-context.jsx'
 
 // Skill Endorsement System
 // profileUserId = whose profile is being viewed

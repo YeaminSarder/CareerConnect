@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import axios from '../api/axios.js'
-import SkillEndorsements from '../components/mypart/SkillEndorsements.jsx'
+import SkillEndorsements from '../components/SkillEndorsements.jsx'
 
 // A standalone page to search for a connection and endorse their skills.
 // This exists because the repo doesn't have a "view another student's
