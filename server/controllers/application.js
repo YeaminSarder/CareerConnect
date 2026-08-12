@@ -66,6 +66,7 @@ export const getMyApplications = async (req, res) => {
 		const applications = await Application.find({ student: studentId })
 			.populate('internship')
 			.populate('cv', 'title')
+			.populate('student', 'name email')
 			.sort({ createdAt: -1 })
 
 		res.status(200).json(applications)
