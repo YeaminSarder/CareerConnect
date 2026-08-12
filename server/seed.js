@@ -122,8 +122,30 @@ export const seedDatabase = async () => {
 				const profile = await Profile.create({
 					description: s.description,
 					department: s.department,
-					skills: ['React', 'Node.js', 'MongoDB', 'JavaScript'],
-					careerInterests: ['Software Engineering', 'Web Development']
+					skills: ['React', 'Node.js', 'MongoDB', 'JavaScript', 'Python'],
+					careerInterests: ['Software Engineering', 'Web Development', 'AI Research'],
+					projects: [
+						{
+							title: `${s.name.split(' ')[0]}'s Capstone: CareerConnect Platform`,
+							description: 'Interactive web platform providing CV generation, career analytics, and application management for CSE students.',
+							projectType: 'Academic Project',
+							githubLink: 'https://github.com/YeaminSarder/CareerConnect',
+							liveLink: 'https://careerconnect.demo',
+							toolsUsed: ['React', 'Node.js', 'Express', 'MongoDB'],
+							imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop',
+							featured: true
+						},
+						{
+							title: 'Undergraduate Thesis: Neural Code Inspection & Vulnerability Detection',
+							description: 'Research work investigating graph neural networks and attention mechanisms for identifying security anti-patterns in source code.',
+							projectType: 'Thesis Work',
+							githubLink: 'https://github.com/sample/code-vulnerability-thesis',
+							liveLink: '',
+							toolsUsed: ['Python', 'PyTorch', 'FastAPI', 'Docker'],
+							imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop',
+							featured: true
+						}
+					]
 				})
 
 				await User.create({
@@ -133,7 +155,7 @@ export const seedDatabase = async () => {
 					profile: profile._id
 				})
 			}
-			console.log('✅ Featured sample student accounts seeded!')
+			console.log('✅ Featured sample student accounts with portfolio projects seeded!')
 		}
 
 		// 3. Seed Posts if none exist
