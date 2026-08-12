@@ -63,7 +63,7 @@ const PortfolioStats = ({ projects = [] }) => {
 					<div className="d-flex align-items-center justify-content-between">
 						<div>
 							<h3 className="fw-bold mb-0">{uniqueTools.size}</h3>
-							<small className="text-white-50 fw-semibold">Tech Tools Used</small>
+							<small className="text-white-50 fw-semibold">Tools ({repoCount} Repos)</small>
 						</div>
 						<div className="bg-white bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center" style={{ width: '42px', height: '42px' }}>
 							<i className="bi bi-tools fs-5"></i>

@@ -12,7 +12,6 @@ const PortfolioShowcase = ({ projects = [], isOwner = false, onProfileUpdated })
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [projectToEdit, setProjectToEdit] = useState(null)
 	const [selectedProject, setSelectedProject] = useState(null)
-	const [deletingId, setDeletingId] = useState(null)
 
 	// Filter Logic
 	const filteredProjects = projects.filter((project) => {
@@ -56,7 +55,6 @@ const PortfolioShowcase = ({ projects = [], isOwner = false, onProfileUpdated })
 		if (!window.confirm('Are you sure you want to remove this project from your portfolio?')) {
 			return
 		}
-		setDeletingId(projectId)
 		try {
 			const updatedProfile = await deleteProject(projectId)
 			if (onProfileUpdated) {
@@ -64,8 +62,6 @@ const PortfolioShowcase = ({ projects = [], isOwner = false, onProfileUpdated })
 			}
 		} catch (err) {
 			alert('Failed to delete project: ' + (err.response?.data?.error || err.message))
-		} finally {
-			setDeletingId(null)
 		}
 	}
 

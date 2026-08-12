@@ -15,19 +15,19 @@ const ProfilePage = () => {
 	const [departmentText, setDepartmentText] = useState('')
 	const [savingBio, setSavingBio] = useState(false)
 
-	const fetchProfile = async () => {
-		if (!user) return
-		try {
-			const res = await axios.get('/myprofile')
-			dispatch({ type: 'SET_PROFILE', payload: res.data })
-			setBioText(res.data.description || '')
-			setDepartmentText(res.data.department || '')
-		} catch (err) {
-			console.error('Failed to fetch profile:', err)
-		}
-	}
-
 	useEffect(() => {
+		const fetchProfile = async () => {
+			if (!user) return
+			try {
+				const res = await axios.get('/myprofile')
+				dispatch({ type: 'SET_PROFILE', payload: res.data })
+				setBioText(res.data.description || '')
+				setDepartmentText(res.data.department || '')
+			} catch (err) {
+				console.error('Failed to fetch profile:', err)
+			}
+		}
+
 		fetchProfile()
 	}, [user, dispatch])
 
