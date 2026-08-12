@@ -1,6 +1,8 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
+import { useModal } from "../../hooks/use-modal";
+import CvViewer from "./cv-viewer.jsx";
 
 export function CvCard({
     cv,
@@ -8,6 +10,7 @@ export function CvCard({
     onEdit,
     onDelete,
 }) {
+    const { show, onHide, openModal, closeModal } = useModal();
     return (
         <Card className="shadow-sm h-100">
             <Card.Body>
@@ -33,13 +36,15 @@ export function CvCard({
                 </Stack>
 
                 <Card.Text className="text-muted">
-                    {cv.summary || "No summary"}
+                    {cv.description || "No description available"}
                 </Card.Text>
 
                 <Stack direction="horizontal" gap={2}>
                     <Button
                         variant="primary"
-                        onClick={() => onView(cv)}
+                        onClick={() => {
+                            openModal();
+                        }}
                     >
                         View
                     </Button>
@@ -59,6 +64,11 @@ export function CvCard({
                         Delete
                     </Button>
                 </Stack>
+                <CvViewer
+                    cv={cv}
+                    show={show}
+                    onHide={onHide}
+                />
             </Card.Body>
         </Card>
     );

@@ -8,21 +8,27 @@ const cvSchema = new Schema(
             type: String,
             required: true
         },
+        description: {
+            type: String,
+            required: true,
+            default: "Edit to add description"
+        },
         user: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: "user"
         }
-    }
+    },
+	{ timestamps: true }
 );
 
-cvSchema.statics.user_create = async function (user_id, title) {
+cvSchema.statics.user_create = async function (user_id, {title, description}) {
     // user: Schema.Types.ObjectId
     // title: String
     const user = User.findById(user_id)
     if (!user) {throw new Error("User does not exist")}
     if (!title) {throw new Error("title cannot be empty")}
-    const cv = await this.create({title, user:user_id})
+    const cv = await this.create({title, description, user:user_id})
     return cv
 }
 export default mongoose.model('cv', cvSchema);
