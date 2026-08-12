@@ -13,6 +13,19 @@ const postSchema = new Schema(
 			type: String,
 			required: true
 		},
+		postType: {
+			type: String,
+			enum: [
+				'General Update',
+				'Project Update',
+				'Internship Achievement',
+				'Certification Completion',
+				'Learning Progress',
+				'Hiring Opportunity'
+			],
+			default: 'General Update'
+		},
+		
 		title: {
 			type: String,
 			default: ''

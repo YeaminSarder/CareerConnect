@@ -10,6 +10,10 @@ import postRoute from './post.js'
 import internshipRoute from './internship.js'
 import analyticsRoute from './analytics.js'
 import applicationRoute from './application.js'
+//import recommendationRoute from './recommendation.js'
+//import feedRoute from './feed.js'
+import endorsementRoute from './endorsement.js'
+import interviewRoute from './interview.js'
 
 router.use('/profile', profileRoute)
 router.use('/myprofile', myProfileRoute)
@@ -20,6 +24,11 @@ router.use('/posts', postRoute)
 router.use('/internships', internshipRoute)
 router.use('/analytics', analyticsRoute)
 router.use('/applications', applicationRoute)
+//router.use('/recommendations', recommendationRoute)
+//router.use('/feed', feedRoute)
+router.use('/endorsements', endorsementRoute)
+router.use('/interviews', interviewRoute)
+
 
 export default router
 
