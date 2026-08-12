@@ -7,6 +7,8 @@ import ApplicationTracker from '../components/rakibul/ApplicationTracker.jsx'
 import RecruiterDashboard from '../components/rakibul/RecruiterDashboard.jsx'
 import { getMyApplications, withdrawApplication } from '../api/application.js'
 import { useAuthContext } from '../hooks/use-auth-context.jsx'
+import ApplicationBoard from '../components/applications/application-board.jsx'
+import { useMyApplications, useInvalidateMyApplications } from '../hooks/use-applications.jsx'
 
 const InternshipsPage = () => {
 	const { user } = useAuthContext()
@@ -17,7 +19,6 @@ const InternshipsPage = () => {
 
 	// Tab and Application Tracker state
 	const [activeTab, setActiveTab] = useState('discover') // 'discover' | 'tracker' | 'recruiter'
-	const [myApplications, setMyApplications] = useState([])
 	const [loadingTracker, setLoadingTracker] = useState(false)
 	const [applyTargetJob, setApplyTargetJob] = useState(null)
 
@@ -42,24 +43,10 @@ const InternshipsPage = () => {
 		}
 	}
 
-	const fetchMyApplicationsList = async () => {
-		if (!user) return
-		setLoadingTracker(true)
-		try {
-			const res = await getMyApplications()
-			setMyApplications(res.data || [])
-		} catch (err) {
-			console.error('Error fetching my applications:', err)
-		} finally {
-			setLoadingTracker(false)
-		}
-	}
-
+	const { data: myApplications = [] } = useMyApplications() // Fetches applications for the logged-in user
+    const invalidateMyApplications = useInvalidateMyApplications() // Function to refresh the application list
 	useEffect(() => {
 		fetchInternships()
-		if (user) {
-			fetchMyApplicationsList()
-		}
 	}, [user])
 
 	const handlePostCreated = (newJob) => {
@@ -86,14 +73,14 @@ const InternshipsPage = () => {
 	}
 
 	const handleApplicationSubmitted = (newApp) => {
-		setMyApplications((prev) => [newApp, ...prev])
+		invalidateMyApplications() // Refresh the application list after submission
 	}
 
 	const handleWithdrawApplication = async (appId) => {
 		if (!window.confirm('Are you sure you want to withdraw this application?')) return
 		try {
 			await withdrawApplication(appId)
-			setMyApplications((prev) => prev.filter((a) => a._id !== appId))
+			invalidateMyApplications() // Refresh the application list after withdrawal
 		} catch (err) {
 			console.error('Error withdrawing application:', err)
 			alert(err.response?.data?.error || 'Failed to withdraw application.')
@@ -295,10 +282,10 @@ const InternshipsPage = () => {
 
 			{/* TAB CONTENT 2: PERSONAL APPLICATION TRACKER */}
 			{activeTab === 'tracker' && (
-				<ApplicationTracker
+				<ApplicationBoard
 					applications={myApplications}
 					loading={loadingTracker}
-					onWithdraw={handleWithdrawApplication}
+					handleWithdrawApplication={handleWithdrawApplication}
 				/>
 			)}
 
