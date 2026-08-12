@@ -58,12 +58,17 @@ const Navbar = () =>  {
                         Endorsements
                       </Link>
                     </Nav.Item>
+                    <Nav.Item>
+                      <Link to="/profile" className="nav-link">
+                        Portfolio & Projects
+                      </Link>
+                    </Nav.Item>
                   </>
                 )}
                 {user ? (
                   <Nav.Item>
-                    <Link to="/profile" className="nav-link">
-                      {user.name}
+                    <Link to="/profile" className="nav-link fw-bold text-info">
+                      <i className="bi bi-person-circle me-1"></i>{user.name}
                     </Link>
                   </Nav.Item>
                 ) : (
