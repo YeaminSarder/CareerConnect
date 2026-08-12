@@ -17,7 +17,7 @@ const CvViewer = ({ cv, show, onHide }) => {
 
 				<div>
 					<strong>Description</strong>
-					<div>no description</div>
+					<div>{cv.description || "no description"}</div>
 				</div>
 			</Modal.Body>
 

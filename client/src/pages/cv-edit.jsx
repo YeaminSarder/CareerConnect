@@ -19,6 +19,7 @@ export const CvEdit = () => {
         }
     });
     const [title, setTitle] = useState(cv?.title)
+    const [description, setDescription] = useState(cv?.description)
     const [myerror, setMyerror] = useState("")
     const {updateCv} = useUpdateCv(setMyerror)
 
@@ -39,11 +40,11 @@ export const CvEdit = () => {
                         placeholder={cv.title}
                     />
                     <AppForm.InputGroup
-                        aria-label="discription"
+                        aria-label="description"
                         type="textarea"
-                        value={cv.title}
-                        onChange={(e) => { }}
-                        placeholder="Title"
+                        value={description}
+                        onChange={(e) => { setDescription(e.target.value) }}
+                        placeholder="Description"
                     />
                 </AppForm.Group>
                 <Button variant="primary" type="submit">Update</Button>
@@ -53,8 +54,7 @@ export const CvEdit = () => {
     async function handleSubmit(e) {
         setMyerror("") 
         e.preventDefault()
-        const r = await updateCv({id: cvId, data: {title}})
-        //if (!r?.data?.acknowledged) setMyerror("Update not acknowledged")
-        console.log(r,cvId,title)
+        const r = await updateCv({id: cvId, data: {title, description}})
+        console.log(r,cvId,title,description)
     }
 }

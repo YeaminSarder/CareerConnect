@@ -38,7 +38,7 @@ export const getCvById = async (req, res) => {
 // Create a new CV
 export const createCv = async function createCv(req, res) {
     try {
-        const cv = await Cv.user_create(req.user._id, req.body.title)
+        const cv = await Cv.user_create(req.user._id, req.body)
         res.status(201).json(cv);
     } catch (error) {
         res.status(400).json({ error: error.message });

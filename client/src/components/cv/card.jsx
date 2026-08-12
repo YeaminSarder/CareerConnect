@@ -36,7 +36,7 @@ export function CvCard({
                 </Stack>
 
                 <Card.Text className="text-muted">
-                    {cv.summary || "No summary"}
+                    {cv.description || "No description available"}
                 </Card.Text>
 
                 <Stack direction="horizontal" gap={2}>
