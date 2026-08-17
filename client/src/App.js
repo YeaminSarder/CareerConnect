@@ -12,6 +12,7 @@ import AnalyticsPage from './pages/analytics'
 import InterviewsPage from './pages/interview'
 import EndorsementsPage from './pages/endorsement'
 import { CvEdit } from './pages/cv-edit'
+import PublicPortfolioPage from './pages/portfolio'
 import { useAuthContext } from './hooks/use-auth-context'
 import { Navigate } from 'react-router'
 import { Loading } from './components/loading'
@@ -33,6 +34,10 @@ function App() {
           <Route
             path='/profile'
             element={isLoading? <Loading/>: user ? <Profile /> : <Navigate to="/login" /> }
+          />
+          <Route
+            path='/portfolio/:id'
+            element={isLoading? <Loading/>: <PublicPortfolioPage /> }
           />
           <Route
             path='/internships'

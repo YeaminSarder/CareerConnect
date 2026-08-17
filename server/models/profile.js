@@ -53,6 +53,15 @@ const profileSchema = new Schema(
 				technologies: [String],
 				githubLink: { type: String, default: '' },
 				demoLink: { type: String, default: '' },
+				liveLink: { type: String, default: '' },
+				toolsUsed: { type: [String], default: [] },
+				imageUrl: { type: String, default: '' },
+				projectType: {
+					type: String,
+					enum: ['Academic Project', 'Thesis Work', 'Personal Project', 'Capstone Project', 'Other'],
+					default: 'Academic Project'
+				},
+				featured: { type: Boolean, default: false },
 				startDate: { type: String, default: '' },
 				endDate: { type: String, default: '' }
 			}
