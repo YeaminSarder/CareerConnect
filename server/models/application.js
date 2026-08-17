@@ -34,7 +34,7 @@ const applicationSchema = new Schema(
 )
 applicationSchema.virtual('matchingScore').get(function () {
 	// Implementation for matching score calculation
-	return calculateMatchingScore(this.student, this.internship, this.cv)
+	return calculateMatchingScore(this.student.profile, this.internship, this.cv)
 })
 // Ensure a student cannot apply twice to the same internship
 applicationSchema.index({ student: 1, internship: 1 }, { unique: true })

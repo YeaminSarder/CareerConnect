@@ -156,7 +156,12 @@ export const getRecruiterApplications = async (req, res) => {
 		}
 
 		const applications = await Application.find(internshipFilter)
-			.populate('student', 'name email profile role')
+			.populate({
+				path: 'student',
+				populate: {
+					path: 'profile'
+				}
+			})
 			.populate('cv')
 			.populate('internship')
 			.sort({ createdAt: -1 })
