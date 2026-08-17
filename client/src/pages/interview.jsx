@@ -1,4 +1,4 @@
-import InterviewSchedule from '../components/InterviewSchedule.jsx'
+import InterviewSchedule from '../components/mypart/InterviewSchedule.jsx'
 
 const InterviewsPage = () => {
 	return <InterviewSchedule />
