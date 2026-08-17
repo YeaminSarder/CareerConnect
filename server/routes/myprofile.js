@@ -6,5 +6,6 @@ const router = express.Router()
 router.use(requireAuth)
 
 router.get('/', myprofileController.getProfile)
+router.patch('/', myprofileController.updateMyProfile)
 
 export default router
