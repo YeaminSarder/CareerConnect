@@ -41,10 +41,18 @@ const profileSchema = new Schema(
 		],
 		projects: [
 			{
-				title: String,
-				description: String,
-				githubLink: String,
-				toolsUsed: [String]
+				title: { type: String, required: true },
+				description: { type: String, default: '' },
+				projectType: {
+					type: String,
+					enum: ['Academic Project', 'Thesis Work', 'Personal Project', 'Capstone Project', 'Other'],
+					default: 'Academic Project'
+				},
+				githubLink: { type: String, default: '' },
+				liveLink: { type: String, default: '' },
+				toolsUsed: { type: [String], default: [] },
+				imageUrl: { type: String, default: '' },
+				featured: { type: Boolean, default: false }
 			}
 		]
 	},
