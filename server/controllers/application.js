@@ -161,7 +161,7 @@ export const getRecruiterApplications = async (req, res) => {
 			.populate('internship')
 			.sort({ createdAt: -1 })
 
-		res.status(200).json(applications)
+		res.status(200).json(applications.map((app) => app.toJSON({ virtuals: true })))
 	} catch (err) {
 		res.status(500).json({ error: err.message })
 	}
