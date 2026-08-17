@@ -23,7 +23,7 @@ const RecruiterDashboard = ({ internships = [] }) => {
 			const res = await getRecruiterApplications()
 			setApplications(res.data || [])
 		} catch (err) {
-			console.error('Error fetching applications for recruiter:', err)
+			console.error('Error fetching applications for recruiter:', err, err?.response?.data?.error)
 		} finally {
 			setLoading(false)
 		}
