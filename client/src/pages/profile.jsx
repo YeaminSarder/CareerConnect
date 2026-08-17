@@ -3,6 +3,7 @@ import useProfileContext from '../hooks/profile'
 import { useAuthContext } from '../hooks/use-auth-context'
 import axios from '../api/axios'
 import ProfileCompletionBar from '../components/rakibul/ProfileCompletionBar'
+import SkillEndorsements from '../components/mypart/SkillEndorsements.jsx'
 
 const ProfilePage = () => {
 	const { state, dispatch } = useProfileContext()
