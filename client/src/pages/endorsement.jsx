@@ -2,13 +2,7 @@ import { useState } from 'react'
 import axios from '../api/axios.js'
 import SkillEndorsements from '../components/SkillEndorsements.jsx'
 
-import { useState } from 'react'
-import axios from '../api/axios.js'
-import SkillEndorsements from '../components/mypart/SkillEndorsements.jsx'
 
-// A standalone page to search for a connection and endorse their skills.
-// This exists because the repo doesn't have a "view another student's
-// profile" page yet - this covers the same need for now.
 const EndorsementsPage = () => {
 	const [search, setSearch] = useState('')
 	const [results, setResults] = useState([])
