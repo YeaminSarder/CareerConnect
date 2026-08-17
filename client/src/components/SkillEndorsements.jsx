@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import axios from '../api/axios.js'
-import { useAuthContext } from '../hooks/use-auth-context.jsx'
+import axios from '../../api/axios.js'
+import { useAuthContext } from '../../hooks/use-auth-context.jsx'
 
 // Skill Endorsement System
 // profileUserId = whose profile is being viewed
@@ -22,7 +22,7 @@ const SkillEndorsements = ({ profileUserId, profileSkills = [] }) => {
 
 	useEffect(() => {
 		if (profileUserId) fetchEndorsements()
-		
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [profileUserId])
 
 	const handleEndorse = async () => {
@@ -80,4 +80,3 @@ const SkillEndorsements = ({ profileUserId, profileSkills = [] }) => {
 }
 
 export default SkillEndorsements
-
