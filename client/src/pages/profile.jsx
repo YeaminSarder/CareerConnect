@@ -66,8 +66,15 @@ const ProfilePage = () => {
 					)}
 				</p>
 			</div>
+
+			{/* Skill Endorsement System - shows endorsements this user has received */}
+			<SkillEndorsements
+				profileUserId={user?._id}
+				profileSkills={profile.skills || []}
+			/>
 		</div>
 	)
 }
 
 export default ProfilePage
+
