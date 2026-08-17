@@ -184,7 +184,7 @@ const RecruiterDashboard = ({ internships = [] }) => {
 				</div>
 			) : (
 				<div className="table-responsive bg-white rounded-3 border">
-					<table className="table table-hover align-middle mb-0">
+					<table className="table align-middle mb-0 overflow-visible">
 						<thead className="table-light">
 							<tr>
 								<th scope="col" className="py-3 ps-3">Candidate Info</th>
