@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from '../../api/axios.js'
+import axios from '../api/axios.js'
 
 // Skill-Based Profile Recommendation System
 const SkillRecommendations = () => {

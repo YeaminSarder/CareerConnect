@@ -1,6 +1,6 @@
 import React from 'react'
 import ConnectionManager from '../components/rakibul/ConnectionManager.jsx'
-import SkillRecommendations from '../components/mypart/SkillRecommendations.jsx'
+import SkillRecommendations from '../components/SkillRecommendations.jsx'
 
 const ConnectionsPage = () => {
 	return (
