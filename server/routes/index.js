@@ -14,6 +14,7 @@ import applicationRoute from './application.js'
 //import feedRoute from './feed.js'
 import endorsementRoute from './endorsement.js'
 import interviewRoute from './interview.js'
+import reminderRoute from './reminder.js'
 
 router.use('/profile', profileRoute)
 router.use('/myprofile', myProfileRoute)
@@ -28,6 +29,7 @@ router.use('/applications', applicationRoute)
 //router.use('/feed', feedRoute)
 router.use('/endorsements', endorsementRoute)
 router.use('/interviews', interviewRoute)
+router.use('/reminders', reminderRoute)
 
 
 export default router
