@@ -2,6 +2,8 @@ import api from './axios'
 
 export const getReminders = () => api.get('/reminders')
 
-export default {
+const reminderApi = {
 	getReminders
 }
+
+export default reminderApi

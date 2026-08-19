@@ -66,35 +66,39 @@ export const getReminders = async (req, res) => {
 		})
 
 		// 3. Fetch applications that haven't been updated for a long time (>= STALE_DAYS)
-		const staleApplications = await Application.find({
+		const userApplications = await Application.find({
 			student: userId,
-			status: { $in: ['Applied', 'Under Review'] },
-			updatedAt: { $lte: staleThreshold }
+			status: { $in: ['Applied', 'Under Review'] }
 		})
 			.populate('internship')
 			.sort({ updatedAt: 1 })
 
-		const staleReminders = staleApplications.map((app) => {
-			const lastUpdated = new Date(app.updatedAt || app.appliedAt || app.createdAt)
-			const elapsedMs = now.getTime() - lastUpdated.getTime()
-			const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24))
+		const staleReminders = userApplications
+			.filter((app) => {
+				const lastUpdated = new Date(app.updatedAt || app.appliedAt || app.createdAt || 0)
+				return lastUpdated.getTime() <= staleThreshold.getTime()
+			})
+			.map((app) => {
+				const lastUpdated = new Date(app.updatedAt || app.appliedAt || app.createdAt || 0)
+				const elapsedMs = now.getTime() - lastUpdated.getTime()
+				const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24))
 
-			return {
-				id: `app-${app._id}`,
-				targetId: app._id,
-				type: 'stale_application',
-				title: `Application Pending: ${app.internship?.title || 'Internship'}`,
-				subtitle: app.internship?.company || 'Company',
-				targetDate: app.updatedAt,
-				diffMs: -elapsedMs, // negative indicates elapsed time
-				elapsedDays: elapsedDays,
-				isStale: true,
-				meta: {
-					status: app.status,
-					appliedAt: app.appliedAt
+				return {
+					id: `app-${app._id}`,
+					targetId: app._id,
+					type: 'stale_application',
+					title: `Application Pending: ${app.internship?.title || 'Internship'}`,
+					subtitle: app.internship?.company || 'Company',
+					targetDate: lastUpdated,
+					diffMs: -elapsedMs, // negative indicates elapsed time
+					elapsedDays: elapsedDays,
+					isStale: true,
+					meta: {
+						status: app.status,
+						appliedAt: app.appliedAt
+					}
 				}
-			}
-		})
+			})
 
 		// Aggregate summary counts
 		const totalReminders = deadlineReminders.length + interviewReminders.length + staleReminders.length
