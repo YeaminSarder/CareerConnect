@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuthContext } from '../hooks/use-auth-context'
 import axios from '../api/axios'
 import PostInteractions from '../components/rakibul/PostInteractions'
+import ReminderAlerts from '../components/ReminderAlerts'
 
 const Home = () => {
     const { user } = useAuthContext()
@@ -64,6 +65,9 @@ const Home = () => {
 
     return (
         <div className="container py-4" style={{ maxWidth: '800px' }}>
+            {/* FR-Deadline & Interview Reminder Center */}
+            {user && <ReminderAlerts />}
+
             <h4 className="fw-bold mb-4 text-primary">
                 <i className="bi bi-newspaper me-2"></i>Student Professional News Feed
             </h4>
