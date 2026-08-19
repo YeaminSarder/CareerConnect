@@ -13,6 +13,7 @@ const ReminderAlerts = ({ compact = false, limit = 0 }) => {
 	})
 	const [loading, setLoading] = useState(true)
 	const [activeFilter, setActiveFilter] = useState('all') // 'all' | 'deadlines' | 'interviews' | 'stale'
+	const [searchTerm, setSearchTerm] = useState('')
 	const [, setTick] = useState(0)
 
 	const fetchRemindersData = async () => {
@@ -46,6 +47,15 @@ const ReminderAlerts = ({ compact = false, limit = 0 }) => {
 		else if (activeFilter === 'interviews') items = data.interviews
 		else if (activeFilter === 'stale') items = data.staleApplications
 		else items = data.all
+
+		if (searchTerm.trim()) {
+			const query = searchTerm.toLowerCase()
+			items = items.filter(
+				(item) =>
+					item.title.toLowerCase().includes(query) ||
+					item.subtitle.toLowerCase().includes(query)
+			)
+		}
 
 		if (limit > 0) {
 			return items.slice(0, limit)
@@ -101,35 +111,47 @@ const ReminderAlerts = ({ compact = false, limit = 0 }) => {
 				</button>
 			</div>
 
-			{/* Filter Tabs */}
-			<div className="d-flex flex-wrap gap-2 mb-3">
-				<button
-					className={`btn btn-sm ${activeFilter === 'all' ? 'btn-primary shadow-sm' : 'btn-light border'}`}
-					onClick={() => setActiveFilter('all')}
-				>
-					All Alerts <span className="badge bg-white text-dark ms-1">{data.summary.total}</span>
-				</button>
-				<button
-					className={`btn btn-sm ${activeFilter === 'deadlines' ? 'btn-danger shadow-sm' : 'btn-light border'}`}
-					onClick={() => setActiveFilter('deadlines')}
-				>
-					<i className="bi bi-hourglass-split me-1"></i>Deadlines{' '}
-					<span className="badge bg-white text-dark ms-1">{data.summary.deadlinesCount}</span>
-				</button>
-				<button
-					className={`btn btn-sm ${activeFilter === 'interviews' ? 'btn-info text-white shadow-sm' : 'btn-light border'}`}
-					onClick={() => setActiveFilter('interviews')}
-				>
-					<i className="bi bi-calendar-event-fill me-1"></i>Interviews{' '}
-					<span className="badge bg-white text-dark ms-1">{data.summary.interviewsCount}</span>
-				</button>
-				<button
-					className={`btn btn-sm ${activeFilter === 'stale' ? 'btn-warning text-dark shadow-sm' : 'btn-light border'}`}
-					onClick={() => setActiveFilter('stale')}
-				>
-					<i className="bi bi-exclamation-triangle-fill me-1"></i>Stale Applications{' '}
-					<span className="badge bg-white text-dark ms-1">{data.summary.staleCount}</span>
-				</button>
+			{/* Filter Tabs & Search */}
+			<div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+				<div className="d-flex flex-wrap gap-2">
+					<button
+						className={`btn btn-sm ${activeFilter === 'all' ? 'btn-primary shadow-sm' : 'btn-light border'}`}
+						onClick={() => setActiveFilter('all')}
+					>
+						All Alerts <span className="badge bg-white text-dark ms-1">{data.summary.total}</span>
+					</button>
+					<button
+						className={`btn btn-sm ${activeFilter === 'deadlines' ? 'btn-danger shadow-sm' : 'btn-light border'}`}
+						onClick={() => setActiveFilter('deadlines')}
+					>
+						<i className="bi bi-hourglass-split me-1"></i>Deadlines{' '}
+						<span className="badge bg-white text-dark ms-1">{data.summary.deadlinesCount}</span>
+					</button>
+					<button
+						className={`btn btn-sm ${activeFilter === 'interviews' ? 'btn-info text-white shadow-sm' : 'btn-light border'}`}
+						onClick={() => setActiveFilter('interviews')}
+					>
+						<i className="bi bi-calendar-event-fill me-1"></i>Interviews{' '}
+						<span className="badge bg-white text-dark ms-1">{data.summary.interviewsCount}</span>
+					</button>
+					<button
+						className={`btn btn-sm ${activeFilter === 'stale' ? 'btn-warning text-dark shadow-sm' : 'btn-light border'}`}
+						onClick={() => setActiveFilter('stale')}
+					>
+						<i className="bi bi-exclamation-triangle-fill me-1"></i>Stale Applications{' '}
+						<span className="badge bg-white text-dark ms-1">{data.summary.staleCount}</span>
+					</button>
+				</div>
+				<div className="input-group input-group-sm style-search" style={{ maxWidth: '220px' }}>
+					<span className="input-group-text bg-light border-end-0"><i className="bi bi-search text-muted"></i></span>
+					<input
+						type="text"
+						className="form-control border-start-0"
+						placeholder="Search alerts..."
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
+				</div>
 			</div>
 
 			{/* Content List */}
