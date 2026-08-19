@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from '../api/axios.js'
+import { calculateRemainingTime } from '../utils/reminderUtils.js'
 
 // Interview Schedule and Preparation Module
 const InterviewSchedule = () => {
@@ -7,6 +8,7 @@ const InterviewSchedule = () => {
 	const [form, setForm] = useState({ company: '', position: '', date: '', meetingLink: '', mode: 'Online' })
 	const [newTask, setNewTask] = useState({})
 	const [feedbackDraft, setFeedbackDraft] = useState({})
+	const [, setTick] = useState(0)
 
 	const fetchInterviews = async () => {
 		try {
@@ -19,6 +21,14 @@ const InterviewSchedule = () => {
 
 	useEffect(() => {
 		fetchInterviews()
+	}, [])
+
+	// Ticker for real-time countdown updates
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTick((prev) => prev + 1)
+		}, 1000)
+		return () => clearInterval(timer)
 	}, [])
 
 	const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
@@ -138,28 +148,38 @@ const InterviewSchedule = () => {
 				</form>
 			</div>
 
-			{interviews.map((interview) => (
-				<div key={interview._id} className="card shadow-sm border-0 p-3 mb-3 rounded-3">
-					<div className="d-flex justify-content-between align-items-start">
-						<div>
-							<h6 className="fw-bold mb-1">
-								{interview.position} at {interview.company}
-							</h6>
-							<small className="text-muted">
-								{new Date(interview.date).toLocaleString()} · {interview.mode} · {interview.status}
-							</small>
-							{interview.meetingLink && (
-								<div>
-									<a href={interview.meetingLink} target="_blank" rel="noreferrer" className="small">
-										<i className="bi bi-camera-video me-1"></i>Meeting link
-									</a>
+			{interviews.map((interview) => {
+				const countdown = interview.status === 'Scheduled' ? calculateRemainingTime(interview.date) : null
+				return (
+					<div key={interview._id} className="card shadow-sm border-0 p-3 mb-3 rounded-3">
+						<div className="d-flex justify-content-between align-items-start">
+							<div>
+								<div className="d-flex align-items-center gap-2 mb-1">
+									<h6 className="fw-bold mb-0">
+										{interview.position} at {interview.company}
+									</h6>
+									{countdown && (
+										<span className={`badge font-monospace ${countdown.urgency === 'danger' ? 'bg-danger text-white' : countdown.urgency === 'warning' ? 'bg-warning text-dark' : 'bg-info text-dark'}`}>
+											<i className="bi bi-clock me-1"></i>
+											{countdown.text}
+										</span>
+									)}
 								</div>
-							)}
+								<small className="text-muted">
+									{new Date(interview.date).toLocaleString()} · {interview.mode} · {interview.status}
+								</small>
+								{interview.meetingLink && (
+									<div>
+										<a href={interview.meetingLink} target="_blank" rel="noreferrer" className="small">
+											<i className="bi bi-camera-video me-1"></i>Meeting link
+										</a>
+									</div>
+								)}
+							</div>
+							<button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(interview._id)}>
+								<i className="bi bi-trash"></i>
+							</button>
 						</div>
-						<button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(interview._id)}>
-							<i className="bi bi-trash"></i>
-						</button>
-					</div>
 
 					<hr />
 					<h6 className="fw-bold small mb-2">Preparation Checklist</h6>
@@ -209,7 +229,8 @@ const InterviewSchedule = () => {
 						Save Feedback & Mark Completed
 					</button>
 				</div>
-			))}
+			)
+			})}
 		</div>
 	)
 }

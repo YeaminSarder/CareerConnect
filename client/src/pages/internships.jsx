@@ -9,6 +9,7 @@ import { getMyApplications, withdrawApplication } from '../api/application.js'
 import { useAuthContext } from '../hooks/use-auth-context.jsx'
 import ApplicationBoard from '../components/applications/application-board.jsx'
 import { useMyApplications, useInvalidateMyApplications } from '../hooks/use-applications.jsx'
+import { calculateRemainingTime } from '../utils/reminderUtils.js'
 
 const InternshipsPage = () => {
 	const { user } = useAuthContext()
@@ -233,12 +234,18 @@ const InternshipsPage = () => {
 														<span className="fw-medium text-dark">{job.salaryRange}</span>
 													</div>
 												)}
-												{job.deadline && (
-													<div className="col-6 text-end">
-														<i className="bi bi-calendar-event me-1 text-danger"></i>
-														<span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
-													</div>
-												)}
+												{job.deadline && (() => {
+													const countdown = calculateRemainingTime(job.deadline)
+													return (
+														<div className="col-6 text-end">
+															<i className="bi bi-calendar-event me-1 text-danger"></i>
+															<span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
+															<span className={`badge ms-2 font-monospace ${countdown.urgency === 'danger' ? 'bg-danger text-white' : countdown.urgency === 'warning' ? 'bg-warning text-dark' : 'bg-info text-dark'}`}>
+																{countdown.text}
+															</span>
+														</div>
+													)
+												})()}
 											</div>
 
 											{/* Card Footer */}
