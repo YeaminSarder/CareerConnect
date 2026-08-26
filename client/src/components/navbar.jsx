@@ -2,6 +2,8 @@ import { Link } from 'react-router'
 import { Navbar as RNavbar, Nav, Container, Button } from 'react-bootstrap'
 import { useLogout } from '../hooks/use-logout'
 import { useAuthContext } from '../hooks/use-auth-context'
+import NotificationDropdown from './NotificationDropdown'
+
 const Navbar = () =>  {
     const { logout } = useLogout();
     const { user } = useAuthContext();
@@ -20,7 +22,7 @@ const Navbar = () =>  {
             />{' '}CareerConnect</RNavbar.Brand>
           <RNavbar.Toggle aria-controls="responsive-navbar-nav" />
           <RNavbar.Collapse id="responsive-navbar-nav">
-              <Nav variant="pills" className="me-auto">
+              <Nav variant="pills" className="me-auto align-items-lg-center">
                 <Nav.Item>
                   <Link to="/" className="nav-link">
                     Home
@@ -66,11 +68,16 @@ const Navbar = () =>  {
                   </>
                 )}
                 {user ? (
-                  <Nav.Item>
-                    <Link to="/profile" className="nav-link fw-bold text-info">
-                      <i className="bi bi-person-circle me-1"></i>{user.name}
-                    </Link>
-                  </Nav.Item>
+                  <>
+                    <Nav.Item className="me-1 ms-lg-2">
+                      <NotificationDropdown />
+                    </Nav.Item>
+                    <Nav.Item>
+                      <Link to="/profile" className="nav-link fw-bold text-info">
+                        <i className="bi bi-person-circle me-1"></i>{user.name}
+                      </Link>
+                    </Nav.Item>
+                  </>
                 ) : (
                   <>
                     <Nav.Item>
