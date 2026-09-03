@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react'
-import axios from '../api/axios.js'
+import {
+	getMyInterviews,
+	createInterview,
+	deleteInterview,
+	addChecklistItem,
+	toggleChecklistItem,
+	updateInterview
+} from '../api/interviews'
 
 // Interview Schedule and Preparation Module
 const InterviewSchedule = () => {
