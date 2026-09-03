@@ -12,6 +12,10 @@ router.get('/', CvController.getMyCvs);
 router.param('id', CvController.validateCvId);
 router.patch('/:id', CvController.updateCv);
 router.patch('/:id/set-primary', CvController.setPrimaryCv);
+router.get('/:id/file',(req,res, next) => {
+    console.log("getCvFile", req.cv.file.path, req.cv.file.mimeType)
+    next()
+},CvController.getCvFile)
 router.get('/:id', CvController.getCvById);
 router.delete('/:id', CvController.deleteCv);
 router.post('/', CvController.createCvFromFile);

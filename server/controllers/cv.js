@@ -2,6 +2,7 @@ import Cv from '../models/cv.js';
 import mongoose from 'mongoose';
 import uploadCv from '../middleware/upload-cv.js';
 import { extractTextFromPdf, extractDescription } from '../services/pdf-extraction.js';
+import path from 'path';
 
 export const validateCvId = async (req, res, next, id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -166,10 +167,10 @@ export const updateCvFile = async (req, res, next) => {
 
         await req.cv.save()
         if (!req.pipelineMode) {
-          res.json(req.cv)
+            res.json(req.cv)
         } else {
-          // If in pipeline mode, just call next middleware
-          return next()
+            // If in pipeline mode, just call next middleware
+            return next()
         }
     } catch (error) {
         res.status(400).json({
@@ -189,10 +190,10 @@ export const renameCvFromFile = async (req, res, next) => {
         req.cv.title = req.file.originalname.replace(/\.[^/.]+$/, "") // Remove file extension
         await req.cv.save()
         if (!req.pipelineMode) {
-          res.json(req.cv)
+            res.json(req.cv)
         } else {
-          // If in pipeline mode, just call next middleware
-          return next()
+            // If in pipeline mode, just call next middleware
+            return next()
         }
     } catch (error) {
         res.status(400).json({
@@ -215,14 +216,33 @@ export const setDescriptionFromFile = async (req, res, next) => {
         req.cv.description = description
         await req.cv.save()
         if (!req.pipelineMode) {
-          res.json(req.cv)
+            res.json(req.cv)
         } else {
-          // If in pipeline mode, just call next middleware
-          return next()
+            // If in pipeline mode, just call next middleware
+            return next()
         }
     } catch (error) {
         res.status(400).json({
             error: error.message
+        })
+    }
+}
+
+export const getCvFile = async (req, res) => {
+
+    try {
+        const filePath = path.resolve(process.cwd(), req.cv.file.path)
+
+        res.sendFile(filePath, {
+            headers: {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'inline'
+            }
+        })
+
+    } catch (error) {
+        res.status(404).json({
+            error: 'CV file not found'
         })
     }
 }
@@ -239,5 +259,6 @@ export default {
     setDescriptionFromFile,
     renameCvFromFile,
     validateCvId,
-    updateCvFile
+    updateCvFile,
+    getCvFile
 };
