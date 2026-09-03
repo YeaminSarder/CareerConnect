@@ -117,13 +117,39 @@ export const seedDatabase = async () => {
 					description: 'Data Scientist building career match scoring algorithms and analytics visualizers.'
 				}
 			]
-
 			for (const s of sampleStudents) {
 				const profile = await Profile.create({
 					description: s.description,
 					department: s.department,
-					skills: ['React', 'Node.js', 'MongoDB', 'JavaScript', 'Python'],
-					careerInterests: ['Software Engineering', 'Web Development', 'AI Research'],
+
+					skills: [
+						{ name: 'React', category: 'Frameworks' },
+						{ name: 'Node.js', category: 'Backend' },
+						{ name: 'MongoDB', category: 'Database' },
+						{ name: 'JavaScript', category: 'Programming' },
+						{ name: 'Python', category: 'Programming' }
+					],
+
+					careerInterests: {
+						jobRoles: [
+							'Software Engineer',
+							'Full-Stack Developer'
+						],
+						industries: [
+							'Technology',
+							'Software'
+						],
+						workModes: [
+							'Remote',
+							'Hybrid'
+						],
+						careerFields: [
+							'Software Engineering',
+							'Web Development',
+							'AI Research'
+						]
+					},
+
 					projects: [
 						{
 							title: `${s.name.split(' ')[0]}'s Capstone: CareerConnect Platform`,
@@ -131,7 +157,12 @@ export const seedDatabase = async () => {
 							projectType: 'Academic Project',
 							githubLink: 'https://github.com/YeaminSarder/CareerConnect',
 							liveLink: 'https://careerconnect.demo',
-							toolsUsed: ['React', 'Node.js', 'Express', 'MongoDB'],
+							toolsUsed: [
+								'React',
+								'Node.js',
+								'Express',
+								'MongoDB'
+							],
 							imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop',
 							featured: true
 						},
@@ -141,7 +172,12 @@ export const seedDatabase = async () => {
 							projectType: 'Thesis Work',
 							githubLink: 'https://github.com/sample/code-vulnerability-thesis',
 							liveLink: '',
-							toolsUsed: ['Python', 'PyTorch', 'FastAPI', 'Docker'],
+							toolsUsed: [
+								'Python',
+								'PyTorch',
+								'FastAPI',
+								'Docker'
+							],
 							imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop',
 							featured: true
 						}
