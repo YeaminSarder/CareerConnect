@@ -9,6 +9,7 @@ export function CvCard({
     onView,
     onEdit,
     onDelete,
+    onSetPrimary
 }) {
     const { show, onHide, openModal, closeModal } = useModal();
     return (
@@ -23,6 +24,11 @@ export function CvCard({
 
                         <Card.Subtitle className="text-muted">
                             {new Date(cv.updatedAt).toLocaleDateString()}
+                            {cv.isPrimary && (
+                                <span className="badge bg-primary ms-2">
+                                    Primary
+                                </span>
+                            )}
                         </Card.Subtitle>
                     </div>
 
@@ -55,7 +61,14 @@ export function CvCard({
                     >
                         Edit
                     </Button>
-
+                    {!cv.isPrimary && (
+                    <Button
+                        variant="outline-secondary"
+                        onClick={() => onSetPrimary(cv)}
+                    >
+                        Set Primary
+                    </Button>
+                    )}
                     <Button
                         className="ms-auto"
                         variant="outline-danger"

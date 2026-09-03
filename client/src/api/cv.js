@@ -9,5 +9,8 @@ export const createCv = (data) => api.post("/cv", data);
 export const updateCv = (id, data) =>
   api.patch(`/cv/${id}`, data);
 
+export const setPrimaryCv = (id) =>
+  api.patch(`/cv/${id}/set-primary`);
+
 export const deleteCv = (id) =>
   api.delete(`/cv/${id}`);
