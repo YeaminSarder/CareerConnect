@@ -1,5 +1,10 @@
 import Cv from '../models/cv.js';
 import mongoose from 'mongoose';
+import uploadCv from '../middleware/upload-cv.js';
+import { extractTextFromPdf, extractDescription } from '../services/pdf-extraction.js';
+import path from 'path';
+import fs from 'fs/promises';
+import Application from '../models/application.js';
 
 export const validateCvId = async (req, res, next, id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -36,14 +41,42 @@ export const getCvById = async (req, res) => {
 };
 
 // Create a new CV
-export const createCv = async function createCv(req, res) {
+export const createAndAttachEmptyCv = async (req, res, next) => {
     try {
-        const cv = await Cv.user_create(req.user._id, req.body)
-        res.status(201).json(cv);
+        const cv = await Cv.user_create(req.user._id, { title: 'Untitled CV', description: 'Edit to add description' });
+        if (!cv) {
+            return res.status(400).json({ error: 'Failed to create Empty CV' });
+        }
+        req.cv = cv; // Attach the newly created CV to the request object
+        next(); // Call the next middleware (e.g., file upload handler)
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-};
+}
+async function noop() { } // No-operation function for middleware chaining
+export const createCvFromFile = async (req, res) => {
+    try {
+        req.pipelineMode = true; // Indicate that this request is part of a pipeline
+        await createAndAttachEmptyCv(req, res, noop) // Create an empty CV first
+        await new Promise((resolve, reject) => { // Wrap the multer upload in a promise to handle errors
+            uploadCv.single('file')(req, res, error => {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve()
+                }
+            })
+        })
+        await updateCvFile(req, res, noop) // Then update the CV with the uploaded file
+        await renameCvFromFile(req, res, noop) // Finally, rename the CV based on the uploaded file
+        await setDescriptionFromFile(req, res, noop) // Finally, set the description based on the uploaded file
+        return res.status(201).json(req.cv)
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        })
+    }
+}
 
 // Update a CV
 export const updateCv = async (req, res) => {
@@ -78,10 +111,38 @@ export const setPrimaryCv = async (req, res) => {
 // Delete a CV
 export const deleteCv = async (req, res) => {
     try {
-        await req.cv.deleteOne();
-        res.json({ message: 'CV deleted successfully' });
+        const cv = req.cv
+        const application = await Application.findOne({
+            cv: req.cv._id
+        })
+
+        if (application) {
+            return res.status(400).json({
+                error: 'This CV has been used for an application and cannot be deleted'
+            })
+        }
+        // Delete the database document
+        await cv.deleteOne()
+
+        // Delete the uploaded PDF, if it exists
+        if (cv.file?.path) {
+            const filePath = path.resolve(process.cwd(), cv.file.path)
+
+            await fs.unlink(filePath).catch(error => {
+                // File may already be gone; don't fail the whole deletion
+                if (error.code !== 'ENOENT') {
+                    throw error
+                }
+            })
+        }
+
+        res.json({
+            message: 'CV deleted successfully'
+        })
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            error: error.message
+        })
     }
 };
 
@@ -89,7 +150,7 @@ export const getMyCvs = async (req, res) => {
     try {
         const id = req.user._id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({"error":"invalid user",id: id})
+            return res.status(404).json({ "error": "invalid user", id: id })
         }
 
         const cvs = await Cv.find({ ...req.body, user: id }).sort({ isPrimary: -1, createdAt: -1 });
@@ -106,14 +167,128 @@ export const getMyCvs = async (req, res) => {
     }
 };
 
+export const updateCvFile = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                error: 'No PDF file uploaded'
+            })
+        }
+
+        // Delete the previous file if one exists
+        if (req.cv.file?.path) {
+            const fs = await import('fs/promises')
+
+            try {
+                await fs.unlink(req.cv.file.path)
+            } catch (error) {
+                if (error.code !== 'ENOENT') {
+                    throw error
+                }
+            }
+        }
+
+        req.cv.file = {
+            path: req.file.path,
+            originalName: req.file.originalname,
+            mimeType: req.file.mimetype,
+            size: req.file.size
+        }
+
+        await req.cv.save()
+        if (!req.pipelineMode) {
+            res.json(req.cv)
+        } else {
+            // If in pipeline mode, just call next middleware
+            return next()
+        }
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        })
+    }
+}
+
+export const renameCvFromFile = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                error: 'No file uploaded'
+            })
+        }
+
+        req.cv.title = req.file.originalname.replace(/\.[^/.]+$/, "") // Remove file extension
+        await req.cv.save()
+        if (!req.pipelineMode) {
+            res.json(req.cv)
+        } else {
+            // If in pipeline mode, just call next middleware
+            return next()
+        }
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        })
+    }
+}
+
+export const setDescriptionFromFile = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                error: 'No file uploaded'
+            })
+        }
+
+        const text = await extractTextFromPdf(req.file.path)
+        const description = extractDescription(text)
+
+        req.cv.description = description
+        await req.cv.save()
+        if (!req.pipelineMode) {
+            res.json(req.cv)
+        } else {
+            // If in pipeline mode, just call next middleware
+            return next()
+        }
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        })
+    }
+}
+
+export const getCvFile = async (req, res) => {
+
+    try {
+        const filePath = path.resolve(process.cwd(), req.cv.file.path)
+
+        res.sendFile(filePath, {
+            headers: {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': 'inline'
+            }
+        })
+
+    } catch (error) {
+        res.status(404).json({
+            error: 'CV file not found'
+        })
+    }
+}
 
 export default {
     getAllCvs,
     getCvById,
-    createCv,
+    createCvFromFile,
+    createAndAttachEmptyCv,
     updateCv,
     setPrimaryCv,
     deleteCv,
     getMyCvs,
-    validateCvId
+    setDescriptionFromFile,
+    renameCvFromFile,
+    validateCvId,
+    updateCvFile,
+    getCvFile
 };

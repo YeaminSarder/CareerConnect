@@ -21,7 +21,14 @@ const cvSchema = new Schema(
             type: Schema.Types.ObjectId,
             required: true,
             ref: "user"
-        }
+        },
+        file: {
+			path: String,
+			originalName: String,
+			mimeType: String,
+			size: Number
+		},
+
     },
 	{ timestamps: true }
 );
@@ -29,7 +36,7 @@ const cvSchema = new Schema(
 cvSchema.statics.user_create = async function (user_id, {title, description}) {
     // user: Schema.Types.ObjectId
     // title: String
-    const user = User.findById(user_id)
+    const user = await User.findById(user_id)
     if (!user) {throw new Error("User does not exist")}
     if (!title) {throw new Error("title cannot be empty")}
     const cv = await this.create({title, description, user:user_id})

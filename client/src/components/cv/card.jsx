@@ -2,7 +2,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import { useModal } from "../../hooks/use-modal";
-import CvViewer from "./cv-viewer.jsx";
+import { CvViewer } from "./cv-viewer.jsx";
 
 export function CvCard({
     cv,
