@@ -1,5 +1,5 @@
 import { Modal, Button } from 'react-bootstrap'
-
+import { CvUsage } from './cv-usage.jsx'
 const CvViewer = ({ cv, show, onHide }) => {
 	if (!cv) return null
 
@@ -19,6 +19,10 @@ const CvViewer = ({ cv, show, onHide }) => {
 					<strong>Description</strong>
 					<div>{cv.description || "no description"}</div>
 				</div>
+				<div className="mt-3">
+					<CvUsage cvId={cv._id} />
+				</div>
+
 			</Modal.Body>
 
 			<Modal.Footer>

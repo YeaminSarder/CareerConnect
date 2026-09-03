@@ -7,6 +7,10 @@ import {
     updateCv as apiUpdateCv,
     setPrimaryCv as apiSetPrimaryCv
 } from "../api/cv";
+
+import { getMyApplications } from '../api/application'
+
+
 export const useCv = () => {
     const { isPending, isError, data, error } = useQuery({ queryKey: ['myCvs'], queryFn: apiGetMyCvs })
     if (isError) {
@@ -59,5 +63,19 @@ export const useCreateCv = () => {
          })
     return {...mutation, createCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
 };
+
+export function useCvUsage(cvId) {
+	return useQuery({
+		queryKey: ['cv-usage', cvId],
+		queryFn: async () => {
+			const response = await getMyApplications()
+
+			return response.data.filter(
+				application => application.cv?._id === cvId
+			)
+		},
+		enabled: !!cvId
+	})
+}
 
 export default useCv;
