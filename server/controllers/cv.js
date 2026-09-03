@@ -92,7 +92,7 @@ export const getMyCvs = async (req, res) => {
             return res.status(404).json({"error":"invalid user",id: id})
         }
 
-        const cvs = await Cv.find({ ...req.body, user: id });
+        const cvs = await Cv.find({ ...req.body, user: id }).sort({ isPrimary: -1, createdAt: -1 });
 
         if (!cvs) {
             return res.status(404).json({

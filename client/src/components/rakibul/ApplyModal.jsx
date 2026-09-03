@@ -132,7 +132,7 @@ const ApplyModal = ({ isOpen, onClose, internship, onApplicationSubmitted }) => 
 									>
 										{cvList.map((cvItem) => (
 											<option key={cvItem._id} value={cvItem._id}>
-												{cvItem.title || 'Untitled CV'} (ID: {cvItem._id.slice(-6)})
+												{cvItem.title || 'Untitled CV'} (ID: {cvItem._id.slice(-6)}) {cvItem.isPrimary ? '- Primary' : ''}
 											</option>
 										))}
 									</select>
