@@ -7,6 +7,7 @@ export function CvGrid({
     onView,
     onEdit,
     onDelete,
+    onSetPrimary
 }) {
     return (
         <Row xs={1} md={2} lg={3} className="g-4">
@@ -17,6 +18,7 @@ export function CvGrid({
                         onView={onView}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onSetPrimary={onSetPrimary}
                     />
                 </Col>
             ))}

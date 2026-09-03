@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router'
 import { 
     useCv,
     useDeleteCv,
-    useCreateCv
+    useCreateCv,
+    useSetPrimaryCv
 } from '../hooks/use-cv'
 import { CvHeader } from '../components/cv/header'
 import { CvGrid } from '../components/cv/grid'
@@ -16,13 +17,14 @@ const Cv = () => {
     const { cv, error: cvError } = useCv()
     const { deleteCv, error: deleteError } = useDeleteCv()
     const { createCv, error: createError } = useCreateCv()
+    const { setPrimaryCv, error: setPrimaryError } = useSetPrimaryCv()
     const navigate = useNavigate()
 
     return (
         <div className="m-3">
             <div className="m-2 max-w-sm">
                 <Error message={
-                    cvError || deleteError || createError
+                    cvError || deleteError || createError || setPrimaryError
                     } />
             </div>
 
@@ -37,6 +39,7 @@ const Cv = () => {
                     onView={handleViewCv}
                     onEdit={handleEditCv}
                     onDelete={handleDeleteCv}
+                    onSetPrimary={handleSetPrimary}
                 />
             )}
         </div>
@@ -57,6 +60,10 @@ const Cv = () => {
 
     function handleDeleteCv(cv) {
         deleteCv(cv._id)
+    }
+
+    function handleSetPrimary(cv) {
+        setPrimaryCv({ id: cv._id })
     }
 }
 export default Cv

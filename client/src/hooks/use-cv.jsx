@@ -4,7 +4,8 @@ import {
     getMyCvs as apiGetMyCvs,
     deleteCv as apiDeleteCv,
     createCv as apiCreateCv,
-    updateCv as apiUpdateCv
+    updateCv as apiUpdateCv,
+    setPrimaryCv as apiSetPrimaryCv
 } from "../api/cv";
 export const useCv = () => {
     const { isPending, isError, data, error } = useQuery({ queryKey: ['myCvs'], queryFn: apiGetMyCvs })
@@ -35,6 +36,18 @@ export const useUpdateCv = (setError) => {
          })
     return {...mutation, updateCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
 };
+
+export const useSetPrimaryCv = (setError) => {
+    const queryClient = useQueryClient();
+    const mutation = useMutation(
+        { mutationFn: (p)=>apiSetPrimaryCv(p.id).catch((error) => {setError(error?.response?.data?.error || error.message)}),
+            onSuccess: async() => {
+                queryClient.invalidateQueries({ queryKey: ['myCvs'] })
+            }
+         })
+    return {...mutation, setPrimaryCv: mutation.mutateAsync, error: mutation.error?.response?.data?.error || mutation.error};
+};
+
 
 export const useCreateCv = () => {
     const queryClient = useQueryClient();

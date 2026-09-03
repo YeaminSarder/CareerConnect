@@ -13,6 +13,10 @@ const cvSchema = new Schema(
             required: true,
             default: "Edit to add description"
         },
+        isPrimary: {
+            type: Boolean,
+            default: false
+        },
         user: {
             type: Schema.Types.ObjectId,
             required: true,

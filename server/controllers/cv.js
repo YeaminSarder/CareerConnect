@@ -58,6 +58,22 @@ export const updateCv = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+// Set a CV as primary
+export const setPrimaryCv = async (req, res) => {
+    try {
+        // First, unset the current primary CV
+        await Cv.updateMany({ user: req.user._id, isPrimary: true }, { isPrimary: false });
+        // Then set the new primary CV
+        const cv = await req.cv.updateOne({ isPrimary: true }, { new: true, runValidators: true });
+        if (!cv) {
+            return res.status(404).json({ error: 'CV not found' });
+        }
+        res.json(cv);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 
 // Delete a CV
 export const deleteCv = async (req, res) => {
@@ -96,6 +112,7 @@ export default {
     getCvById,
     createCv,
     updateCv,
+    setPrimaryCv,
     deleteCv,
     getMyCvs,
     validateCvId
