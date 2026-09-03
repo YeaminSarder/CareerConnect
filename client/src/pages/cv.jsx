@@ -58,7 +58,7 @@ const Cv = () => {
     function handleCreateCv() {
         fileInputRef.current?.click()
     }
-    
+
     function handleFileSelected(event) {
         const file = event.target.files?.[0]
 
@@ -79,7 +79,9 @@ const Cv = () => {
     }
 
     function handleDeleteCv(cv) {
-        deleteCv(cv._id)
+        deleteCv(cv._id).catch((error) => {
+            console.error('Failed to delete CV:', error)
+        })
     }
 
     function handleSetPrimary(cv) {

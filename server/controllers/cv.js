@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import uploadCv from '../middleware/upload-cv.js';
 import { extractTextFromPdf, extractDescription } from '../services/pdf-extraction.js';
 import path from 'path';
+import fs from 'fs/promises';
+import Application from '../models/application.js';
 
 export const validateCvId = async (req, res, next, id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -109,10 +111,38 @@ export const setPrimaryCv = async (req, res) => {
 // Delete a CV
 export const deleteCv = async (req, res) => {
     try {
-        await req.cv.deleteOne();
-        res.json({ message: 'CV deleted successfully' });
+        const cv = req.cv
+        const application = await Application.findOne({
+            cv: req.cv._id
+        })
+
+        if (application) {
+            return res.status(400).json({
+                error: 'This CV has been used for an application and cannot be deleted'
+            })
+        }
+        // Delete the database document
+        await cv.deleteOne()
+
+        // Delete the uploaded PDF, if it exists
+        if (cv.file?.path) {
+            const filePath = path.resolve(process.cwd(), cv.file.path)
+
+            await fs.unlink(filePath).catch(error => {
+                // File may already be gone; don't fail the whole deletion
+                if (error.code !== 'ENOENT') {
+                    throw error
+                }
+            })
+        }
+
+        res.json({
+            message: 'CV deleted successfully'
+        })
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            error: error.message
+        })
     }
 };
 
