@@ -22,6 +22,12 @@ const internshipSchema = new Schema(
 			default: 'Onsite'
 		},
 		requiredSkills: [String],
+		keywords: [String],
+		interests: [String],
+		department: {
+			type: [String],
+			default: []
+		},
 		salaryRange: {
 			type: String,
 			default: 'Negotiable'
