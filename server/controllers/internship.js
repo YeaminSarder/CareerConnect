@@ -52,7 +52,7 @@ export const createInternship = async (req, res) => {
 			return res.status(403).json({ error: 'Access denied: Only authorized recruiters or admin users can create internship posts.' })
 		}
 
-		const { title, company, location, workMode, requiredSkills, salaryRange, deadline, description, eligibilityCriteria } = req.body
+		const { title, company, location, workMode, requiredSkills, keywords, interests, department, salaryRange, deadline, description, eligibilityCriteria } = req.body
 
 		if (!title || !company || !location) {
 			return res.status(400).json({ error: 'Please provide company name, role title, and location.' })
@@ -66,17 +66,42 @@ export const createInternship = async (req, res) => {
 			skillsArray = requiredSkills.split(',').map((s) => s.trim()).filter(Boolean)
 		}
 
+		let keywordsArray = []
+		if (Array.isArray(keywords)) {
+			keywordsArray = keywords
+		} else if (typeof keywords === 'string' && keywords.trim().length > 0) {
+			keywordsArray = keywords.split(',').map((s) => s.trim()).filter(Boolean)
+		}
+
+		let interestsArray = []
+		if (Array.isArray(interests)) {
+			interestsArray = interests
+		} else if (typeof interests === 'string' && interests.trim().length > 0) {
+			interestsArray = interests.split(',').map((s) => s.trim()).filter(Boolean)
+		}
+
+		let departmentArray = []
+		if (Array.isArray(department)) {
+			departmentArray = department
+		} else if (typeof department === 'string' && department.trim().length > 0) {
+			departmentArray = department.split(',').map((s) => s.trim()).filter(Boolean)
+		}
+
+
 		const internship = await Internship.create({
 			title,
 			company,
 			location,
 			workMode: workMode || 'Onsite',
 			requiredSkills: skillsArray,
+			keywords: keywordsArray,
+			interests: interestsArray,
+			department: departmentArray,
 			salaryRange: salaryRange || 'Negotiable',
 			deadline: deadline ? new Date(deadline) : undefined,
 			description: description || '',
 			eligibilityCriteria: eligibilityCriteria || '',
-			postedBy: req.user._id
+			postedBy: req.user._id,
 		})
 
 		const populatedInternship = await Internship.findById(internship._id).populate('postedBy', 'name email role')

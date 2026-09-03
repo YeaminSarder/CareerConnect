@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { getRecruiterApplications, updateApplicationStatus } from '../../api/application'
 import SubmittedCvModal from './SubmittedCvModal'
+import { MatchingScore } from '../matching-score'
 
 const RecruiterDashboard = ({ internships = [] }) => {
 	const [applications, setApplications] = useState([])
@@ -22,7 +23,7 @@ const RecruiterDashboard = ({ internships = [] }) => {
 			const res = await getRecruiterApplications()
 			setApplications(res.data || [])
 		} catch (err) {
-			console.error('Error fetching applications for recruiter:', err)
+			console.error('Error fetching applications for recruiter:', err, err?.response?.data?.error)
 		} finally {
 			setLoading(false)
 		}
@@ -183,13 +184,14 @@ const RecruiterDashboard = ({ internships = [] }) => {
 				</div>
 			) : (
 				<div className="table-responsive bg-white rounded-3 border">
-					<table className="table table-hover align-middle mb-0">
+					<table className="table align-middle mb-0 overflow-visible">
 						<thead className="table-light">
 							<tr>
 								<th scope="col" className="py-3 ps-3">Candidate Info</th>
 								<th scope="col" className="py-3">Applied Position</th>
 								<th scope="col" className="py-3">Submitted CV</th>
 								<th scope="col" className="py-3">Applied Date</th>
+								<th scope="col" className="py-3">Matching Score</th>
 								<th scope="col" className="py-3">Status</th>
 								<th scope="col" className="py-3 text-end pe-3">Review & Quick Actions</th>
 							</tr>
@@ -235,6 +237,8 @@ const RecruiterDashboard = ({ internships = [] }) => {
 												day: 'numeric'
 											})}
 										</td>
+										<td className="py-3">
+											<MatchingScore value={app.matchingScore} /></td>
 										<td className="py-3">
 											{getStatusBadge(app.status)}
 										</td>

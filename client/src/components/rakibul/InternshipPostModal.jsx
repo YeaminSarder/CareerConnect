@@ -9,6 +9,9 @@ const InternshipPostModal = ({ isOpen, onClose, onPostCreated, userToken }) => {
 	const [salaryRange, setSalaryRange] = useState('')
 	const [deadline, setDeadline] = useState('')
 	const [requiredSkills, setRequiredSkills] = useState('')
+	const [keywords, setKeywords] = useState('')
+	const [interests, setInterests] = useState('')
+	const [department, setDepartment] = useState('')
 	const [eligibilityCriteria, setEligibilityCriteria] = useState('')
 	const [description, setDescription] = useState('')
 
@@ -55,6 +58,9 @@ const InternshipPostModal = ({ isOpen, onClose, onPostCreated, userToken }) => {
 			setSalaryRange('')
 			setDeadline('')
 			setRequiredSkills('')
+			setKeywords('')
+			setInterests('')
+			setDepartment('')
 			setEligibilityCriteria('')
 			setDescription('')
 
@@ -181,6 +187,39 @@ const InternshipPostModal = ({ isOpen, onClose, onPostCreated, userToken }) => {
 										placeholder="e.g. React, Node.js, MongoDB, Python (separated by comma)"
 										value={requiredSkills}
 										onChange={(e) => setRequiredSkills(e.target.value)}
+									/>
+								</div>
+
+								<div className="col-12">
+									<label className="form-label fw-semibold small text-secondary">Keywords</label>
+									<input
+										type="text"
+										className="form-control"
+										placeholder="e.g. Web Development, Data Science, AI (separated by comma)"
+										value={keywords}
+										onChange={(e) => setKeywords(e.target.value)}
+									/>
+								</div>
+								
+								<div className="col-12">
+									<label className="form-label fw-semibold small text-secondary">Interests</label>
+									<input
+										type="text"
+										className="form-control"
+										placeholder="e.g. Machine Learning, Cloud Computing (separated by comma)"
+										value={interests}
+										onChange={(e) => setInterests(e.target.value)}
+									/>
+								</div>
+
+								<div className="col-12">
+									<label className="form-label fw-semibold small text-secondary">Department</label>
+									<input
+										type="text"
+										className="form-control"
+										placeholder="e.g. Computer Science, Electrical Engineering"
+										value={department}
+										onChange={(e) => setDepartment(e.target.value)}
 									/>
 								</div>
 

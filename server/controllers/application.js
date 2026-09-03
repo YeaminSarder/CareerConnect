@@ -156,12 +156,17 @@ export const getRecruiterApplications = async (req, res) => {
 		}
 
 		const applications = await Application.find(internshipFilter)
-			.populate('student', 'name email profile role')
+			.populate({
+				path: 'student',
+				populate: {
+					path: 'profile'
+				}
+			})
 			.populate('cv')
 			.populate('internship')
 			.sort({ createdAt: -1 })
 
-		res.status(200).json(applications)
+		res.status(200).json(applications.map((app) => app.toJSON({ virtuals: true })))
 	} catch (err) {
 		res.status(500).json({ error: err.message })
 	}
