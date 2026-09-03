@@ -4,8 +4,12 @@ export const getMyCvs = () => api.get("/cv");
 
 export const getCv = (id) => api.get(`/cv/${id}`);
 
-export const createCv = (data) => api.post("/cv", data);
+export const createCv = (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
 
+    return api.post('/cv', formData)
+}
 export const updateCv = (id, data) =>
   api.patch(`/cv/${id}`, data);
 
