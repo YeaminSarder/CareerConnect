@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import axios from '../api/axios.js'
-import { useAuthContext } from '../hooks/use-auth-context.jsx'
+import { getEndorsementsForUser, endorseSkill } from '../../api/endorsements'
+import { useAuthContext } from '../../hooks/use-auth-context.jsx'
 
 // Skill Endorsement System
 // profileUserId = whose profile is being viewed
@@ -13,7 +13,7 @@ const SkillEndorsements = ({ profileUserId, profileSkills = [] }) => {
 
 	const fetchEndorsements = async () => {
 		try {
-			const res = await axios.get(`/endorsements/${profileUserId}`)
+			const res = await getEndorsementsForUser(profileUserId)
 			setEndorsements(res.data)
 		} catch (err) {
 			console.error('Error fetching endorsements:', err)
@@ -22,14 +22,14 @@ const SkillEndorsements = ({ profileUserId, profileSkills = [] }) => {
 
 	useEffect(() => {
 		if (profileUserId) fetchEndorsements()
-		
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [profileUserId])
 
 	const handleEndorse = async () => {
 		if (!selectedSkill) return
 		setError('')
 		try {
-			await axios.post('/endorsements', { toUser: profileUserId, skill: selectedSkill })
+			await endorseSkill(profileUserId, selectedSkill)
 			setSelectedSkill('')
 			fetchEndorsements()
 		} catch (err) {
@@ -80,4 +80,3 @@ const SkillEndorsements = ({ profileUserId, profileSkills = [] }) => {
 }
 
 export default SkillEndorsements
-
