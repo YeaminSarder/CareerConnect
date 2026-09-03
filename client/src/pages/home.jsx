@@ -1,40 +1,43 @@
 import { useEffect, useState } from 'react'
 import { useAuthContext } from '../hooks/use-auth-context'
-import axios from '../api/axios'
+import { getFeed } from '../api/feed'
+import { createPost, updatePost, deletePost } from '../api/posts'
 import PostInteractions from '../components/rakibul/PostInteractions'
+
+const POST_TYPES = [
+    'General Update',
+    'Project Update',
+    'Internship Achievement',
+    'Certification Completion',
+    'Learning Progress',
+    'Hiring Opportunity'
+]
 
 const Home = () => {
     const { user } = useAuthContext()
-    const [posts, setPosts] = useState([
-        {
-            _id: 'demo-post-1',
-            authorName: 'Yeamin Sarder',
-            title: 'Full-Stack Developer Internship Opportunities',
-            content: 'Excited to share that our team has uploaded the latest CV version control and profile builder tools! Check it out.',
-            likes: ['demo-user-2'],
-            comments: [
-                { userName: 'Rakibul Haque', text: 'Great progress team! Looking forward to testing.' }
-            ],
-            saves: []
-        }
-    ])
+    const [posts, setPosts] = useState([])
     const [newPostTitle, setNewPostTitle] = useState('')
     const [newPostContent, setNewPostContent] = useState('')
+    const [newPostType, setNewPostType] = useState('General Update')
     const [posting, setPosting] = useState(false)
 
-    const fetchPosts = async () => {
+    const [editingId, setEditingId] = useState(null)
+    const [editTitle, setEditTitle] = useState('')
+    const [editContent, setEditContent] = useState('')
+    const [editType, setEditType] = useState('General Update')
+
+    // Connection-Based News Feed Algorithm
+    const fetchFeed = async () => {
         try {
-            const res = await axios.get('/posts')
-            if (res.data && res.data.length > 0) {
-                setPosts(res.data)
-            }
+            const res = await getFeed()
+            setPosts(res.data)
         } catch (err) {
-            console.error('Error fetching posts:', err)
+            console.error('Error fetching feed:', err)
         }
     }
 
     useEffect(() => {
-        fetchPosts()
+        fetchFeed()
     }, [])
 
     const handleCreatePost = async (e) => {
@@ -42,13 +45,15 @@ const Home = () => {
         if (!newPostContent.trim()) return
         setPosting(true)
         try {
-            await axios.post(
-                '/posts',
-                { title: newPostTitle, content: newPostContent }
-            )
+            await createPost({
+                title: newPostTitle,
+                content: newPostContent,
+                postType: newPostType
+            })
             setNewPostTitle('')
             setNewPostContent('')
-            fetchPosts()
+            setNewPostType('General Update')
+            fetchFeed()
         } catch (err) {
             console.error('Error creating post:', err)
         } finally {
@@ -62,17 +67,62 @@ const Home = () => {
         )
     }
 
+    const startEdit = (post) => {
+        setEditingId(post._id)
+        setEditTitle(post.title || '')
+        setEditContent(post.content || '')
+        setEditType(post.postType || 'General Update')
+    }
+
+    const cancelEdit = () => {
+        setEditingId(null)
+    }
+
+    const saveEdit = async (postId) => {
+        try {
+            const res = await updatePost(postId, {
+                title: editTitle,
+                content: editContent,
+                postType: editType
+            })
+            handlePostUpdate(res.data)
+            setEditingId(null)
+        } catch (err) {
+            console.error('Error updating post:', err)
+        }
+    }
+
+    const handleDelete = async (postId) => {
+        try {
+            await deletePost(postId)
+            setPosts((prev) => prev.filter((p) => p._id !== postId))
+        } catch (err) {
+            console.error('Error deleting post:', err)
+        }
+    }
+
     return (
         <div className="container py-4" style={{ maxWidth: '800px' }}>
             <h4 className="fw-bold mb-4 text-primary">
                 <i className="bi bi-newspaper me-2"></i>Student Professional News Feed
             </h4>
 
-            {/* Create Post Form */}
+            {/* Create Post Form - Career Activity Post System */}
             {user && (
                 <div className="card shadow-sm border-0 p-3 mb-4 rounded-3">
                     <h6 className="fw-bold mb-2">Create Career Post</h6>
                     <form onSubmit={handleCreatePost}>
+                        <select
+                            className="form-select form-select-sm mb-2"
+                            value={newPostType}
+                            onChange={(e) => setNewPostType(e.target.value)}
+                        >
+                            {POST_TYPES.map((type) => (
+                                <option key={type} value={type}>
+                                    {type}
+                                </option>
+                            ))}
+                        </select>
                         <input
                             type="text"
                             className="form-control form-control-sm mb-2"
@@ -99,25 +149,87 @@ const Home = () => {
 
             {/* Posts List */}
             <div className="d-flex flex-column gap-3">
-                {posts.map((post) => (
-                    <div key={post._id} className="card shadow-sm border-0 p-3 rounded-3">
-                        <div className="d-flex align-items-center mb-2">
-                            <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: '38px', height: '38px', fontWeight: 'bold' }}>
-                                {post.authorName ? post.authorName.charAt(0) : 'S'}
+                {posts.map((post) => {
+                    const isOwner = user && String(post.author) === String(user._id)
+                    const isEditing = editingId === post._id
+
+                    return (
+                        <div key={post._id} className="card shadow-sm border-0 p-3 rounded-3">
+                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                <div className="d-flex align-items-center">
+                                    <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: '38px', height: '38px', fontWeight: 'bold' }}>
+                                        {post.authorName ? post.authorName.charAt(0) : 'S'}
+                                    </div>
+                                    <div>
+                                        <strong className="d-block leading-tight">{post.authorName || 'Student'}</strong>
+                                        <small className="text-muted">{post.postType || 'General Update'}</small>
+                                    </div>
+                                </div>
+
+                                {isOwner && !isEditing && (
+                                    <div className="d-flex gap-1">
+                                        <button
+                                            className="btn btn-sm btn-outline-secondary"
+                                            onClick={() => startEdit(post)}
+                                        >
+                                            <i className="bi bi-pencil"></i>
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-outline-danger"
+                                            onClick={() => handleDelete(post._id)}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                            <div>
-                                <strong className="d-block leading-tight">{post.authorName || 'Student'}</strong>
-                                <small className="text-muted">Student Professional</small>
-                            </div>
+
+                            {isEditing ? (
+                                <div className="mb-2">
+                                    <select
+                                        className="form-select form-select-sm mb-2"
+                                        value={editType}
+                                        onChange={(e) => setEditType(e.target.value)}
+                                    >
+                                        {POST_TYPES.map((type) => (
+                                            <option key={type} value={type}>
+                                                {type}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-sm mb-2"
+                                        value={editTitle}
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                        placeholder="Title"
+                                    />
+                                    <textarea
+                                        className="form-control form-control-sm mb-2"
+                                        rows="3"
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                    ></textarea>
+                                    <div className="d-flex gap-2 justify-content-end">
+                                        <button className="btn btn-sm btn-secondary" onClick={cancelEdit}>
+                                            Cancel
+                                        </button>
+                                        <button className="btn btn-sm btn-primary" onClick={() => saveEdit(post._id)}>
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    {post.title && <h6 className="fw-bold text-dark mb-1">{post.title}</h6>}
+                                    <p className="text-secondary mb-2">{post.content}</p>
+                                </>
+                            )}
+
+                            <PostInteractions post={post} onPostUpdate={handlePostUpdate} />
                         </div>
-
-                        {post.title && <h6 className="fw-bold text-dark mb-1">{post.title}</h6>}
-                        <p className="text-secondary mb-2">{post.content}</p>
-
-                        {/* FR-9 & FR-10: Like, Comment, Save, and Engagement Tracker */}
-                        <PostInteractions post={post} onPostUpdate={handlePostUpdate} />
-                    </div>
-                ))}
+                    )
+                })}
             </div>
         </div>
     )
