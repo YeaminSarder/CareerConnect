@@ -1,6 +1,7 @@
 import Cv from '../models/cv.js';
 import mongoose from 'mongoose';
 import uploadCv from '../middleware/upload-cv.js';
+import { extractTextFromPdf, extractDescription } from '../services/pdf-extraction.js';
 
 export const validateCvId = async (req, res, next, id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -65,6 +66,7 @@ export const createCvFromFile = async (req, res) => {
         })
         await updateCvFile(req, res, noop) // Then update the CV with the uploaded file
         await renameCvFromFile(req, res, noop) // Finally, rename the CV based on the uploaded file
+        await setDescriptionFromFile(req, res, noop) // Finally, set the description based on the uploaded file
         return res.status(201).json(req.cv)
     } catch (error) {
         res.status(400).json({
@@ -199,6 +201,32 @@ export const renameCvFromFile = async (req, res, next) => {
     }
 }
 
+export const setDescriptionFromFile = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                error: 'No file uploaded'
+            })
+        }
+
+        const text = await extractTextFromPdf(req.file.path)
+        const description = extractDescription(text)
+
+        req.cv.description = description
+        await req.cv.save()
+        if (!req.pipelineMode) {
+          res.json(req.cv)
+        } else {
+          // If in pipeline mode, just call next middleware
+          return next()
+        }
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        })
+    }
+}
+
 export default {
     getAllCvs,
     getCvById,
@@ -208,6 +236,7 @@ export default {
     setPrimaryCv,
     deleteCv,
     getMyCvs,
+    setDescriptionFromFile,
     renameCvFromFile,
     validateCvId,
     updateCvFile
