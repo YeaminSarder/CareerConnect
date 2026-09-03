@@ -6,7 +6,7 @@ import {
 	addChecklistItem,
 	toggleChecklistItem,
 	updateInterview
-} from '../api/interviews'
+} from '../../api/interviews'
 
 // Interview Schedule and Preparation Module
 const InterviewSchedule = () => {
@@ -17,7 +17,7 @@ const InterviewSchedule = () => {
 
 	const fetchInterviews = async () => {
 		try {
-			const res = await axios.get('/interviews')
+			const res = await getMyInterviews()
 			setInterviews(res.data)
 		} catch (err) {
 			console.error('Error fetching interviews:', err)
@@ -33,7 +33,7 @@ const InterviewSchedule = () => {
 	const handleCreate = async (e) => {
 		e.preventDefault()
 		try {
-			await axios.post('/interviews', form)
+			await createInterview(form)
 			setForm({ company: '', position: '', date: '', meetingLink: '', mode: 'Online' })
 			fetchInterviews()
 		} catch (err) {
@@ -43,7 +43,7 @@ const InterviewSchedule = () => {
 
 	const handleDelete = async (id) => {
 		try {
-			await axios.delete(`/interviews/${id}`)
+			await deleteInterview(id)
 			fetchInterviews()
 		} catch (err) {
 			console.error('Error deleting interview:', err)
@@ -54,7 +54,7 @@ const InterviewSchedule = () => {
 		const task = newTask[interviewId]
 		if (!task) return
 		try {
-			await axios.post(`/interviews/${interviewId}/checklist`, { task })
+			await addChecklistItem(interviewId, task)
 			setNewTask({ ...newTask, [interviewId]: '' })
 			fetchInterviews()
 		} catch (err) {
@@ -64,7 +64,7 @@ const InterviewSchedule = () => {
 
 	const handleToggleTask = async (interviewId, itemId) => {
 		try {
-			await axios.patch(`/interviews/${interviewId}/checklist/${itemId}`)
+			await toggleChecklistItem(interviewId, itemId)
 			fetchInterviews()
 		} catch (err) {
 			console.error('Error toggling checklist item:', err)
@@ -73,7 +73,7 @@ const InterviewSchedule = () => {
 
 	const handleMarkCompleted = async (interview) => {
 		try {
-			await axios.patch(`/interviews/${interview._id}`, {
+			await updateInterview(interview._id, {
 				status: 'Completed',
 				postInterviewFeedback: feedbackDraft[interview._id] || interview.postInterviewFeedback
 			})
