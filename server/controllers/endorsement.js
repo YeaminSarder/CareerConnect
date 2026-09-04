@@ -31,7 +31,7 @@ export const endorseSkill = async (req, res) => {
 
 		// make sure that skill is actually on the target user's profile
 		const targetUser = await User.findById(toUser).populate('profile')
-		const theirSkills = targetUser && targetUser.profile ? targetUser.profile.skills || [] : []
+		const theirSkills = targetUser && targetUser.profile ? targetUser.profile.getSkillsArray() : []
 
 		if (!theirSkills.includes(skill)) {
 			return res.status(400).json({ error: 'This user does not list that skill' })

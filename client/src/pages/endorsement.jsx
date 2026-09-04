@@ -1,10 +1,8 @@
 import { useState } from 'react'
-import axios from '../api/axios.js'
+import { searchUsers } from '../api/connections-search'
 import SkillEndorsements from '../components/SkillEndorsements.jsx'
 
 // A standalone page to search for a connection and endorse their skills.
-// This exists because the repo doesn't have a "view another student's
-// profile" page yet - this covers the same need for now.
 const EndorsementsPage = () => {
 	const [search, setSearch] = useState('')
 	const [results, setResults] = useState([])
@@ -13,7 +11,7 @@ const EndorsementsPage = () => {
 	const handleSearch = async (e) => {
 		e.preventDefault()
 		try {
-			const res = await axios.get('/connections/search-users', { params: { search } })
+			const res = await searchUsers(search)
 			setResults(res.data)
 		} catch (err) {
 			console.error('Error searching users:', err)
@@ -46,7 +44,7 @@ const EndorsementsPage = () => {
 							className="btn btn-sm btn-outline-secondary text-start mb-1"
 							onClick={() => setSelectedUser(user)}
 						>
-							{user.name} — {user.profile?.skills?.join(', ') || 'No skills listed'}
+							{user.name} — {user.profile?.skills.map((s) => s.name)?.join(', ') || 'No skills listed'}
 						</button>
 					))}
 				</div>
@@ -55,7 +53,7 @@ const EndorsementsPage = () => {
 			{selectedUser && (
 				<SkillEndorsements
 					profileUserId={selectedUser._id}
-					profileSkills={selectedUser.profile?.skills || []}
+					profileSkills={selectedUser.profile?.skills.map((s) => s.name) || []}
 				/>
 			)}
 		</div>

@@ -102,6 +102,19 @@ const profileSchema = new Schema(
 	{ timestamps: true }
 )
 
+profileSchema.methods.getInterestsArray = function () {
+	const ci = this.careerInterests || {}
+	return [
+		...(ci.jobRoles || []),
+		...(ci.industries || []),
+		...(ci.workModes || []),
+		...(ci.careerFields || [])
+	]
+}
+profileSchema.methods.getSkillsArray = function () {
+	return this.skills.map((s) => s.name)
+}
+
 // Expanded Profile Completion Score Algorithm (100% Weighted Breakdown)
 profileSchema.methods.getCompletionScore = function () {
 	let score = 0
