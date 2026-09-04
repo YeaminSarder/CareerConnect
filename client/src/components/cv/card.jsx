@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
 import { useModal } from "../../hooks/use-modal";
 import { CvViewer } from "./cv-viewer.jsx";
+import { CvDeleteModal } from "./delete-modal.jsx";
 
 export function CvCard({
     cv,
@@ -12,6 +13,7 @@ export function CvCard({
     onSetPrimary
 }) {
     const { show, onHide, openModal, closeModal } = useModal();
+    const { show: deleteShow, onHide: deleteOnHide, openModal: openDeleteModal } = useModal();
     return (
         <Card className="shadow-sm h-100">
             <Card.Body>
@@ -72,7 +74,7 @@ export function CvCard({
                     <Button
                         className="ms-auto"
                         variant="outline-danger"
-                        onClick={() => onDelete(cv)}
+                        onClick={() => openDeleteModal()}
                     >
                         Delete
                     </Button>
@@ -81,6 +83,11 @@ export function CvCard({
                     cv={cv}
                     show={show}
                     onHide={onHide}
+                />
+                <CvDeleteModal
+                    cv={cv}
+                    show={deleteShow}
+                    onHide={deleteOnHide}
                 />
             </Card.Body>
         </Card>
