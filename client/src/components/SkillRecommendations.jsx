@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getRecommendations } from '../../api/recommendations'
+import { getRecommendations } from '../api/recommendations'
 
 // Skill-Based Profile Recommendation System
 const SkillRecommendations = () => {

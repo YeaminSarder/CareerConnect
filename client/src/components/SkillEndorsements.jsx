@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getEndorsementsForUser, endorseSkill } from '../../api/endorsements'
-import { useAuthContext } from '../../hooks/use-auth-context.jsx'
+import { getEndorsementsForUser, endorseSkill } from '../api/endorsements'
+import { useAuthContext } from '../hooks/use-auth-context.jsx'
 
 // Skill Endorsement System
 // profileUserId = whose profile is being viewed

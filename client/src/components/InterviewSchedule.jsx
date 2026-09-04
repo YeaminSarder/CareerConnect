@@ -6,7 +6,7 @@ import {
 	addChecklistItem,
 	toggleChecklistItem,
 	updateInterview
-} from '../../api/interviews'
+} from '../api/interviews'
 
 // Interview Schedule and Preparation Module
 const InterviewSchedule = () => {
