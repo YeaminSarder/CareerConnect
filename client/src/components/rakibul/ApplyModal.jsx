@@ -1,53 +1,44 @@
-import React, { useState, useEffect } from 'react'
-import { getMyCvs, createCv } from '../../api/cv'
+import { useState, useEffect, useRef } from 'react'
+import { useCv } from '../../hooks/use-cv'
 import { applyForInternship } from '../../api/application'
+import { useCreateCv } from '../../hooks/use-cv'
 
 const ApplyModal = ({ isOpen, onClose, internship, onApplicationSubmitted }) => {
-	const [cvList, setCvList] = useState([])
 	const [selectedCvId, setSelectedCvId] = useState('')
 	const [loadingCvs, setLoadingCvs] = useState(false)
 	const [submitting, setSubmitting] = useState(false)
 	const [creatingCv, setCreatingCv] = useState(false)
 	const [error, setError] = useState(null)
+    const { cv, error: cvError } = useCv()
+	const { createCv, error: createError } = useCreateCv()
+    const fileInputRef = useRef(null)
 
-	useEffect(() => {
-		if (isOpen) {
-			fetchUserCvs()
-		}
-	}, [isOpen])
-
-	const fetchUserCvs = async () => {
-		setLoadingCvs(true)
-		setError(null)
-		try {
-			const res = await getMyCvs()
-			const cvs = res.data || []
-			setCvList(cvs)
-			if (cvs.length > 0) {
-				setSelectedCvId(cvs[0]._id)
-			}
-		} catch (err) {
-			console.error('Error fetching CVs:', err)
-			setError('Could not fetch your CV list. Please ensure you are logged in.')
-		} finally {
-			setLoadingCvs(false)
-		}
+    if (cv?.length > 0 && !selectedCvId) {
+		setSelectedCvId(cv[0]._id)
 	}
 
+    function handleFileSelected(event) {
+        const file = event.target.files?.[0]
+
+        if (!file) return
+
+        createCv(file).then((data) => {
+			console.log('CV created successfully:', data)
+			setSelectedCvId(data.data._id)
+		}).catch((err) => {
+			console.error('Error creating CV:', err)
+			setError(err.response?.data?.error || 'Failed to create CV.')
+		}).finally(() => {
+			setCreatingCv(false)
+		})
+
+        // Allow selecting the same file again later
+        event.target.value = ''
+    }
 	const handleCreateQuickCv = async () => {
 		setCreatingCv(true)
 		setError(null)
-		try {
-			const res = await createCv({ title: 'Default Professional CV' })
-			const newCv = res.data
-			setCvList((prev) => [newCv, ...prev])
-			setSelectedCvId(newCv._id)
-		} catch (err) {
-			console.error('Error creating CV:', err)
-			setError('Failed to auto-create CV version.')
-		} finally {
-			setCreatingCv(false)
-		}
+		fileInputRef.current?.click()
 	}
 
 	const handleSubmitApplication = async (e) => {
@@ -77,6 +68,13 @@ const ApplyModal = ({ isOpen, onClose, internship, onApplicationSubmitted }) => 
 
 	return (
 		<div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1" role="dialog">
+			<input
+                ref={fileInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={handleFileSelected}
+            />
 			<div className="modal-dialog modal-dialog-centered" role="document">
 				<div className="modal-content shadow-lg border-0 rounded-4">
 					<div className="modal-header bg-primary text-white rounded-top-4">
@@ -123,14 +121,14 @@ const ApplyModal = ({ isOpen, onClose, internship, onApplicationSubmitted }) => 
 										<div className="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
 										Loading your saved CV versions...
 									</div>
-								) : cvList.length > 0 ? (
+								) : cv.length > 0 ? (
 									<select
 										className="form-select"
 										value={selectedCvId}
 										onChange={(e) => setSelectedCvId(e.target.value)}
 										required
 									>
-										{cvList.map((cvItem) => (
+										{cv.map((cvItem) => (
 											<option key={cvItem._id} value={cvItem._id}>
 												{cvItem.title || 'Untitled CV'} (ID: {cvItem._id.slice(-6)}) {cvItem.isPrimary ? '- Primary' : ''}
 											</option>
@@ -177,7 +175,7 @@ const ApplyModal = ({ isOpen, onClose, internship, onApplicationSubmitted }) => 
 							<button
 								type="submit"
 								className="btn btn-primary px-4 fw-bold"
-								disabled={submitting || cvList.length === 0}
+								disabled={submitting || cv.length === 0}
 							>
 								{submitting ? (
 									<>
